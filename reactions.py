@@ -2,14 +2,17 @@ import abilities
 import actions
 import grid
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def slash(action, state):
     if not isinstance(action, actions.Move) or abilities.Slash not in action['element'].abilities:
         return []
     
-    actor = action['element']
-    src  = state.find(actor)
-    dest = action['target']
+    actor   = action['element']
+    src     = state.find(actor)
+    dest    = action['target']
     targets = grid.neighbors(src) & grid.neighbors(dest)
     
     results = []
@@ -31,7 +34,7 @@ def die(action, state):
     results = []
     element = state[action['target']]
     
-    if "Health" in element.abilities and (element["health"] - action.damage) <= 0:
+    if "Health" in element['abilities'] and (element["health"] - action.damage) <= 0:
             results.append(actions.CreateAction({
                 "type": "Die",
                 "element": element,

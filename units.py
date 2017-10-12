@@ -29,7 +29,6 @@ class Unit(dict):
 
     def get_action(self, state):
         for ability in self.abilities:
-            logger.debug("Getting action for %s for %s", ability, self)
             action = ability.get_action(self, state)
             if action: 
                 return action
@@ -48,7 +47,7 @@ class Lava(Unit):
 
 class Warrior(Unit):
     counter = utils.Counter()
-    abilties = ["Stab", "Move", "Bashable"]
+    abilties = ["Stab", "Move", "Health"]
     
 
 class Archer(Unit):

@@ -12,20 +12,23 @@
         },
         {
             "type":"Spawn",
-            "target": [0,3],
+            "target": [7,4],
             "element": {
                "type": "Warrior",
                "abilities": ["Stab", "Move", "Health"],
                "health": 1,
                "team": "blue"
             }
-        }
-    ],
-    [
+        },
         {
-            "type":"Move",
-             "target": [1,0],
-             "element": {"id": "Hero-0"}
+            "type":"Spawn",
+            "target": [9,-4],
+            "element": {
+               "type": "Warrior",
+               "abilities": ["Stab", "Move", "Health"],
+               "health": 1,
+               "team": "green"
+            }
         }
     ]
 ]
