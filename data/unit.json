@@ -1,0 +1,6 @@
+{
+    "type": "Hero",
+    "abilities": ["Slash", "Health"],
+    "health": 1,
+    "team": "red"
+}
