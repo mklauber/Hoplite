@@ -120,12 +120,13 @@ if __name__ == "__main__":
         print state
         print action
         print
-    
+
     level = load_level('data/level1.json')
     e = Engine(level)
-    
+
     e.listeners.add(listener)
     e.fast_forward()
+
     while len(set(u['team'] for u in e.state.values())) > 1:
         e.record()
 

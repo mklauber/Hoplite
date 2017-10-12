@@ -7,35 +7,35 @@ logger = logging.getLogger(__name__)
 class Stab(object):
     @classmethod
     def get_action(cls, actor, state):
-        for target in grid.neighbors(state.find(actor)):
+        for target in cls.threatened_cells(actor, state):
             if target in state and state[target]['team'] != actor['team']:
                 return CreateAction({"type": "Stab", 
                                      "element": actor, 
                                      "target": target})
-    
+
     @classmethod
-    def threatened_cells(cls, actor, state):
+    def targets(cls, actor, state):
         results = set()
         for target, element in state.items():
             if element['team'] != actor['team']:
                 results |= grid.neighbors(target)
         return results
-        
+
+    @classmethod
+    def threatened_cells(cls, actor, state):
+        return grid.neighbors(state.find(actor))
+
 class Move(object):
 
     @classmethod
     def get_action(cls, actor, state):
         try:
-            path = grid.find_path(state, state.find(actor), actor.threatened_cells(state))
+            path = grid.find_path(state, state.find(actor), actor.targets(state))
             return CreateAction({"type": "Move",
                                  "element": actor,
                                  "target": path[1]})
         except grid.NoPathExistsError:
             return None
-        
-    @classmethod
-    def threatened_cells(cls, actor, state):
-        return set()
 
 
 class Slash(object):
