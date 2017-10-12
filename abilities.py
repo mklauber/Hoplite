@@ -14,7 +14,7 @@ class Stab(object):
                                      "target": target})
     
     @classmethod
-    def threatened_tiles(cls, actor, state):
+    def threatened_cells(cls, actor, state):
         results = set()
         for target, element in state.items():
             if element['team'] != actor['team']:
@@ -26,7 +26,7 @@ class Move(object):
     @classmethod
     def get_action(cls, actor, state):
         try:
-            path = grid.find_path(state, state.find(actor), actor.threatened_tiles(state))
+            path = grid.find_path(state, state.find(actor), actor.threatened_cells(state))
             return CreateAction({"type": "Move",
                                  "element": actor,
                                  "target": path[1]})
@@ -34,7 +34,7 @@ class Move(object):
             return None
         
     @classmethod
-    def threatened_tiles(cls, actor, state):
+    def threatened_cells(cls, actor, state):
         return set()
 
 
@@ -87,6 +87,6 @@ class Bashable(object):
 
 class Health(object):
     @classmethod
-    def threatened_tiles(cls, actor, state):
+    def threatened_cells(cls, actor, state):
         return set()
 

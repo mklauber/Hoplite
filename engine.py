@@ -127,7 +127,7 @@ if __name__ == "__main__":
     e.listeners.add(listener)
     e.fast_forward()
     while len(set(u['team'] for u in e.state.values())) > 1:
-        e.record()q
+        e.record()
 
     print json.dumps(e.past, indent=2)
 

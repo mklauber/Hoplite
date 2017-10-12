@@ -34,10 +34,10 @@ class Unit(dict):
                 return action
         return None
         
-    def threatened_tiles(self, state):
+    def threatened_cells(self, state):
         results = set()
         for ability in self.abilities:
-            results |= ability.threatened_tiles(self, state) 
+            results |= ability.threatened_cells(self, state) 
         return results
 
 class Lava(Unit):
