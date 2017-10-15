@@ -12,7 +12,7 @@ parser.add_argument('--test', type=str, choices=['engine'])
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="/tmp/test.log",
+    logging.basicConfig(filename="Hoplite.log",
                         format="%(module)s:%(lineno)d %(message)s",
                         level="DEBUG")
     results = parser.parse_args(sys.argv[1:])

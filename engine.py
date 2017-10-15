@@ -22,7 +22,7 @@ class State(dict):
 
     def __str__(self):
         return "Actors: %s\nGrid: %s" % (self.actors, super(State, self).__str__())
-        
+
 
 class Engine(object):
     def __init__(self, history):
@@ -30,9 +30,7 @@ class Engine(object):
         self.future = history
         self.state = State()
         self.listeners = set()
-        
-        #self.fast_forward()
-        
+
     def fast_forward(self):
         """Execute any remaining future items"""
         while self.future != []:

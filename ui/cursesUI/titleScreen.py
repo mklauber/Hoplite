@@ -1,5 +1,6 @@
 import curses
 
+from ui.cursesUI.levelScreen import LevelScreen
 from .colors import COLORS
 from itertools import cycle
 import utils
@@ -26,7 +27,8 @@ class TitleScreen(object):
 
         if chr(key).upper() == 'Q':
             return lambda x: None
-
+        elif chr(key).upper() == 'S':
+            return LevelScreen('level1.json')
 
     def __call__(self, stdscr):
         win = curses.newwin(27,58)

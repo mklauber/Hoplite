@@ -8,6 +8,10 @@ def CreateAction(action):
 
 
 class Action(dict):
+    def __init__(self, *args, **kwargs):
+        super(Action, self).__init__(*args, **kwargs)
+        self['type'] = self.__class__.__name__
+
     @property
     def element(self):
         return self['element']
