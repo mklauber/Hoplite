@@ -87,3 +87,12 @@ class Hero(Unit):
     def __init__(self, *args, **kwargs):
         super(Hero, self).__init__(*args, **kwargs)
         self['abilities'] = ["Stab", "Move", "Health"]
+        self.next_action = None
+
+    def set_next_action(self, action):
+        self.next_action = action
+
+    def get_action(self, state):
+        action = self.next_action
+        self.next_action = None
+        return action

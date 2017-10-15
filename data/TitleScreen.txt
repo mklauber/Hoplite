@@ -1,0 +1,19 @@
+
+       #   #  ###  ####  #     ##### ##### #####
+       #   # #   # #   # #       #     #   #
+       ##### #   # ####  #       #     #   ###
+       #   # #   # #     #       #     #   #
+       #   #  ###  #     ##### #####   #   #####
+
+                              By: mklauber
+
+
+            (T) Tutorial
+            (S) Quest for the Fleece
+            (C) Challenge Mode
+            (A) Achievements
+            (O) Options
+
+            (Q) Quit
+
+

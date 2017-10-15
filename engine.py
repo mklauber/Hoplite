@@ -1,6 +1,7 @@
 from reactions import REACTIONS
 from actions import CreateAction
 import json
+import utils
 
 import logging
 logger = logging.getLogger(__name__)
@@ -65,7 +66,6 @@ class Engine(object):
             self.emit(self.state, action)
             action.execute(self.state)
         self.past.append(turn)
-
     
     def emit(self, state, action):
         """Announce to any interested listeners each action and the state before the action"""
@@ -74,18 +74,21 @@ class Engine(object):
     
     def record(self, overwrite=False):
         if overwrite == False and self.future != []:
-            raise HopliteError("Cannot record a turn when future turns exist unless the overwrite flag is True")
-        
-        # Cycle the actors
-        actor = self.state.actors.pop(0)
-        self.state.actors.append(actor)
+            raise utils.HopliteError("Cannot record a turn when future turns exist unless the overwrite flag is True")
+
+        actor = self.state.actors[0]
+        action = actor.get_action(self.state)
+        if action == None:
+            return
+
+        # Once we know the actor is going to act
+        # # Cycle the actors
+        self.state.actors.append(self.state.actors.pop(0))
                 
-        actions = [actor.get_action(self.state)]
+        actions = [action]
         turn = []
         while len(actions) != 0:
             action = actions.pop(0)
-            if action == None:
-                continue
             reactions = determine_reactions(action, self.state)
             actions = reactions + actions
             action.execute(self.state)
@@ -94,7 +97,7 @@ class Engine(object):
         self.past.append(turn)
         self.step_backward()
         self.fast_forward()
- 
+
 
 def determine_reactions(action, state):
     reactions = []
@@ -102,9 +105,10 @@ def determine_reactions(action, state):
         reactions.extend(behavior(action, state))
     return reactions
 
+
 def load_level(filename):
     result = []
-    with open(filename, 'r') as f:
+    with open(utils.data_file(filename), 'r') as f:
         level = json.loads(f.read())
     for turn in level:
         computed = []
@@ -114,14 +118,13 @@ def load_level(filename):
     return result
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level="DEBUG")
+def test():
     def listener(state, action):
         print state
         print action
         print
 
-    level = load_level('data/level1.json')
+    level = load_level('level1.json')
     e = Engine(level)
 
     e.listeners.add(listener)
@@ -132,3 +135,7 @@ if __name__ == "__main__":
 
     print json.dumps(e.past, indent=2)
 
+
+if __name__ == "__main__":
+    logging.basicConfig(level="DEBUG")
+    test()

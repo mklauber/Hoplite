@@ -1,5 +1,12 @@
+from os import path
+
 class HopliteError(Exception):
     pass
+
+DATA_DIR = path.join(path.dirname(__file__), 'data/')
+
+def data_file(name):
+    return path.join(DATA_DIR, name)
 
 def all_subclasses(cls):
     return cls.__subclasses__() + [g for s in cls.__subclasses__()

@@ -4,6 +4,7 @@ from actions import CreateAction
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Stab(object):
     @classmethod
     def get_action(cls, actor, state):
@@ -86,7 +87,4 @@ class Bashable(object):
     pass
 
 class Health(object):
-    @classmethod
-    def threatened_cells(cls, actor, state):
-        return set()
-
+    pass

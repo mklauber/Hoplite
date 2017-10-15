@@ -4,7 +4,7 @@
             "type":"Spawn",
             "target": [0,0],
             "element": {
-                "type": "Hero",
+                "type": "Warrior",
                 "abilities": ["Stab", "Move", "Health"],
                 "health": 1,
                 "team": "red"

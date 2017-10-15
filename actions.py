@@ -68,10 +68,8 @@ class Slash(Attack):
 class Lunge(Attack):
     pass
 
-
 class DeepLunge(Attack):
     pass
-
 
 class Shoot(Attack):
     pass
