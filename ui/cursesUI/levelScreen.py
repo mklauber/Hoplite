@@ -64,11 +64,14 @@ class LevelScreen(object):
             # Get the next input
             key = screen.getch()
 
-        name, location = command.split(" ", 1)
-        location = ast.literal_eval(location.strip())
-        return shared.CreateAction({"type": name,
-                                     "element": self.engine.state.actors[0],
-                                     "target":location})
+        try:
+            name, location = command.split(" ", 1)
+            location = ast.literal_eval(location.strip())
+            return shared.CreateAction({"type": name,
+                                         "element": self.engine.state.actors[0],
+                                         "target":location})
+        except:
+            return None
 
         raise utils.HopliteError("Input is not implemented for curses.UI yet")
 
