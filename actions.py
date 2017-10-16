@@ -1,15 +1,9 @@
 import utils
 import grid
-from units import Unit
+from shared import CreateUnit
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-def CreateAction(action):
-    for klass in utils.all_subclasses(Action):
-        if action['type'] == klass.__name__:
-            return klass(**action)
 
 
 class Action(dict):
@@ -42,7 +36,7 @@ class Spawn(Action):
 
     def __init__(self, *args, **kwargs):
         super(Spawn, self).__init__(self, *args, **kwargs)
-        self['element'] = Unit.create(**kwargs['element'])
+        self['element'] = CreateUnit(**kwargs['element'])
 
     def execute(self, state):
         state.actors.append(self.element)
@@ -111,15 +105,12 @@ class DeepLunge(Attack):
 class Shoot(Attack):
     pass
 
-
 class WizardsBeam(Attack):
     pass
 
-
 class Explode(Attack):
     pass
-    
-    
+
 class Die(Action):
     def execute(self, state):
         self.turn_position = state.actors.index(self.element)
@@ -129,4 +120,4 @@ class Die(Action):
     def rollback(self, state):
         state.actors.insert(self.turn_position, self.element)
         state[self.target] = self.element
-    
+

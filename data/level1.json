@@ -4,8 +4,8 @@
             "type":"Spawn",
             "target": [0,0],
             "element": {
-                "type": "Warrior",
-                "team": "red"
+                "type": "Archer",
+                "team": "blue"
             }
         },
         {

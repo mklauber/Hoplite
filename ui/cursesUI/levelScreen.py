@@ -4,8 +4,9 @@ import sys
 import textwrap
 
 import engine
-import actions
+import shared
 from ui.cursesUI.animations import Animation, Static as StaticAnimation
+import units
 import utils
 
 import logging
@@ -28,6 +29,9 @@ class LevelScreen(object):
         self.engine = engine.Engine(engine.load_level(level))
 
     def listener(self, state, action):
+        """Listen for events the engine announces.  Attached to the engine in __call__"""
+
+        # We simply append the events here so that we can decide if we want to process multiple ones later.
         self.events.append((state, action))
 
     def progress(self, screen):
@@ -61,7 +65,7 @@ class LevelScreen(object):
 
         name, location = command.split(" ", 1)
         location = ast.literal_eval(location.strip())
-        return actions.CreateAction({"type": name,
+        return shared.CreateAction({"type": name,
                                      "element": self.engine.state.actors[0],
                                      "target":location})
 
@@ -82,7 +86,7 @@ class LevelScreen(object):
             StaticAnimation().render(screen, self.engine.state)
             try:
                 self.engine.record()
-            except engine.RequiresInput:
+            except units.RequiresInput:
                 action = self.get_input(screen)
                 self.engine.state.actors[0].set_next_action(action)
                 continue

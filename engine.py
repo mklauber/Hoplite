@@ -1,14 +1,14 @@
+import shared
 from reactions import REACTIONS
-from actions import CreateAction
+from shared import CreateAction
 import copy
 import json
 import utils
 
+
 import logging
 logger = logging.getLogger(__name__)
 
-class RequiresInput(utils.HopliteError):
-    pass
 
 class InvalidMove(utils.HopliteError):
     pass

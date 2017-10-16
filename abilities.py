@@ -1,5 +1,5 @@
 import grid
-from actions import CreateAction
+from shared import CreateAction
 
 import logging
 logger = logging.getLogger(__name__)
