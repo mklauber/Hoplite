@@ -23,5 +23,8 @@
   },
   "Temple": {
     "abilities": []
+  },
+  "Hero": {
+    "abilities": ["Slash", "Lunge", "Move", "Health", "Bashable"]
   }
 }

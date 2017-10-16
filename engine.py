@@ -7,6 +7,12 @@ import utils
 import logging
 logger = logging.getLogger(__name__)
 
+class RequiresInput(utils.HopliteError):
+    pass
+
+class InvalidMove(utils.HopliteError):
+    pass
+
 class State(dict):
     def __init__(self):
         self.actors = []
@@ -78,8 +84,9 @@ class Engine(object):
 
         actor = self.state.actors[0]
         action = actor.get_action(self.state)
-        if action == None:
-            return
+        if action.validate(self.state) == False:
+            raise InvalidMove("%s is not permitted" % action)
+
 
         # Once we know the actor is going to act
         # # Cycle the actors

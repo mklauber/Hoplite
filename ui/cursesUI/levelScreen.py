@@ -1,9 +1,8 @@
 import curses
-from .colors import COLORS
-from .animations import Animation, Static as StaticAnimation
-import engine
-import time
+import textwrap
 
+import engine
+from ui.cursesUI.animations import Animation, Static as StaticAnimation
 import utils
 
 import logging
@@ -27,14 +26,21 @@ class LevelScreen(object):
             animation = Animation.create(action)
             animation.render(screen, state)
 
-    def errorMessage(self, error):
-        raise utils.HopliteError("Error Messages are not implemented for curses.UI yet")
+    def error_message(self, screen, error):
+        logger.debug("Error Message")
+        win = curses.newwin(21, 52)
+        win.border()
+        lines = textwrap.wrap(error.message, 50)
+        for i, line in enumerate(lines, start=1):
+            win.addstr(i, 1, line)
+        win.overwrite(screen, 0, 0, 4, 3, 24, 55)
+        while screen.getch() != curses.ascii.NL:
+            pass
 
     def get_input(self):
-        pass
+        raise utils.HopliteError("Input is not implemented for curses.UI yet")
 
     def __call__(self, screen, replay=True, *args, **kwargs):
-        logger.debug(screen)
         if replay == True:
             self.engine.listeners.add(self.listener)
             self.engine.fast_forward()
@@ -46,12 +52,16 @@ class LevelScreen(object):
         StaticAnimation().render(screen, self.engine.state)
 
         while len(set(u['team'] for u in self.engine.state.values())) > 1:
-            # try:
-            self.engine.record()
-            # except engine.RequiresInput:
-            #     self.get_input()
-            #     continue
-            # except engine.InvalidInput as e:
-            #     self.error_message(e)
-            #     continue
+            try:
+                self.engine.record()
+            except engine.RequiresInput:
+                self.get_input()
+                continue
+            except engine.InvalidMove as e:
+                self.error_message(screen, e)
+                continue
+            except Exception:
+                raise
+
+            # Render
             self.progress(screen)

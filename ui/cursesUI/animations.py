@@ -81,10 +81,11 @@ class Static(Animation):
         pass
 
     def render(self, stdscr, state):
-        stdscr.timeout(500)
+        stdscr.timeout(100)
         get_background().overwrite(stdscr)
         render(state).overlay(stdscr)
         stdscr.getch()
+
 
 class Die(Animation):
     def __init__(self, action):

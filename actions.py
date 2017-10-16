@@ -1,5 +1,10 @@
 import utils
+import grid
 from units import Unit
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 def CreateAction(action):
     for klass in utils.all_subclasses(Action):
@@ -29,10 +34,15 @@ class Action(dict):
     def rollback(self, state):
         raise NotImplementedError("Rollback '%s' is not implemented" % self.__class__.__name__)
 
+    def validate(self, state):
+        raise NotImplementedError("Validate '%s' is not implemented", self.__class__.__name__)
+
 class Spawn(Action):
+    """Add a new element to the game grid"""
+
     def __init__(self, *args, **kwargs):
         super(Spawn, self).__init__(self, *args, **kwargs)
-        self['element'] = Unit(**kwargs['element'])
+        self['element'] = Unit.create(**kwargs['element'])
 
     def execute(self, state):
         state.actors.append(self.element)
@@ -41,6 +51,11 @@ class Spawn(Action):
     def rollback(self, state):
         state.actors.remove(self.element)
         del state[self.target]
+
+    def validate(self, state):
+        if self.target in state:
+            return False
+        return True
 
 class ThrowBomb(Action):
     pass
@@ -53,6 +68,15 @@ class Move(Action):
     def rollback(self, state):
         state[self.src] = state.pop(self.target)
         
+    def validate(self, state):
+        if "Move" not in self.element["abilities"]:
+            logger.debug("%s does not have the ability to Move")
+            return False
+        if self.target in state:
+            logger.debug("%s tried to move to %s, which is occupied by %s",
+                         self.element, self.target, state[self.target])
+            return False
+        return True
 
 class Attack(Action):
     damage = 1
@@ -64,7 +88,14 @@ class Attack(Action):
         state[self.target]['health'] += self.damage
 
 class Stab(Attack):
-    pass
+    def validate(self, state):
+        """Validate that the action doesn't violate any rules."""
+        source = state.find(self.element)
+        if self.target not in grid.neighbors(source):
+            return False
+        if "team" not in state.get(self.target, {}) or self.element['team'] == state[self.target]['team']:
+            return False
+        return True
 
 class Slash(Attack):
     pass

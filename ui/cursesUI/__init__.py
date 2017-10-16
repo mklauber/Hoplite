@@ -10,7 +10,7 @@ from ui.cursesUI.titleScreen import TitleScreen
 
 
 def start():
-    logging.basicConfig(level='DEBUG', filename='Hoplite.log')
+    logger.info("Starting a game of Hoplite, using Curses")
 
     def main(stdscr):
         curses.curs_set(0)
