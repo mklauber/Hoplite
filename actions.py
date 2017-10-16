@@ -114,12 +114,10 @@ class Explode(Attack):
 class Die(Action):
     def execute(self, state):
         self.turn_position = state.actors.index(self.element)
-        logger.debug("Removing %s", self.element)
         state.actors.remove(self.element)
         del state[self.target]
 
     def rollback(self, state):
-        logger.debug("Inserting %s", self.element)
         state.actors.insert(self.turn_position, self.element)
         state[self.target] = self.element
 
