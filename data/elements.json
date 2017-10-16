@@ -1,0 +1,27 @@
+{
+  "Warrior": {
+    "abilities": ["Stab", "Move", "Health", "Bashable"],
+    "health": 1
+  },
+  "Archer": {
+    "abilities": ["Stab", "Move", "Health", "Bashable"],
+    "health": 1
+  },
+  "Mage": {
+    "abilities": ["Stab", "Move", "Health", "Bashable"],
+    "health": 1
+  },
+  "Demolitionist": {
+     "abilities": ["Stab", "Move", "Health", "Bashable"],
+    "health": 1
+  },
+  "Bomb": {
+    "abilities": ["Explode", "Bashable"]
+  },
+  "Lava": {
+    "abilities": ["Burn"]
+  },
+  "Temple": {
+    "abilities": []
+  }
+}

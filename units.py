@@ -1,21 +1,29 @@
+from collections import defaultdict
+import json
+
 import utils
 import abilities
 
 import logging
 logger = logging.getLogger(__name__)
 
-def CreateUnit(data):
-    for klass in utils.all_subclasses(Unit):
-        if data['type'] == klass.__name__:
-            return klass(**data)
-
+def initial_data():
+    with open(utils.data_file("elements.json")) as f:
+        return json.load(f)
 
 class Unit(dict):
-    def __init__(self, *args, **kwargs):
-        super(Unit, self).__init__(*args, **kwargs)
-        if not 'id' in self:
-            self['id'] = "%s-%s" % (self.__class__.__name__, self.counter.next())
-        self['type'] = self.__class__.__name__
+    initial_data = initial_data()
+    counters = defaultdict(lambda: utils.Counter())
+
+    def __init__(self, **kwargs):
+        super(Unit, self).__init__(**kwargs)
+        type = kwargs['type']
+        initial_data = self.initial_data[type]
+
+        self.update(initial_data)
+        self.update(kwargs)
+        if 'id' not in self:
+            self['id'] = "%s-%s" % (type, self.counters[type].next())
 
     def __repr__(self):
         return "<" + self['id'] + ">"
@@ -47,52 +55,3 @@ class Unit(dict):
             if hasattr(ability, "targets"):
                 results |= ability.targets(self, state)
         return results
-
-class Lava(Unit):
-    counter = utils.Counter()
-    abilities = ["Burn"]
-
-
-class Warrior(Unit):
-    counter = utils.Counter()
-    abilties = ["Stab", "Move", "Health"]
-    
-
-class Archer(Unit):
-    counter = utils.Counter()
-    abilities = ["Shoot", "Move", "Bashable"]    
-    
-
-class Mage(Unit):
-    counter = utils.Counter()
-    abilities = ["WizardsBeam", "Move", "Bashable"]
-
-
-class Demo(Unit):
-    counter = utils.Counter()
-    abilties = ["ThrowBomb", "Move", "Bashable"]
-
-
-class Temple(Unit):
-    counter = utils.Counter()
-    abilities = ["Prayer"]
-
-
-class Bomb(Unit):
-    counter = utils.Counter()
-    abilities = ["Explode", "Bashable"]
-    
-class Hero(Unit):
-    counter = utils.Counter()
-    def __init__(self, *args, **kwargs):
-        super(Hero, self).__init__(*args, **kwargs)
-        self['abilities'] = ["Stab", "Move", "Health"]
-        self.next_action = None
-
-    def set_next_action(self, action):
-        self.next_action = action
-
-    def get_action(self, state):
-        action = self.next_action
-        self.next_action = None
-        return action

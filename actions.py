@@ -1,5 +1,5 @@
 import utils
-from units import CreateUnit
+from units import Unit
 
 def CreateAction(action):
     for klass in utils.all_subclasses(Action):
@@ -32,7 +32,7 @@ class Action(dict):
 class Spawn(Action):
     def __init__(self, *args, **kwargs):
         super(Spawn, self).__init__(self, *args, **kwargs)
-        self['element'] = CreateUnit(kwargs['element'])
+        self['element'] = Unit(**kwargs['element'])
 
     def execute(self, state):
         state.actors.append(self.element)

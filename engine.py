@@ -1,5 +1,6 @@
 from reactions import REACTIONS
 from actions import CreateAction
+import copy
 import json
 import utils
 
@@ -67,6 +68,7 @@ class Engine(object):
     
     def emit(self, state, action):
         """Announce to any interested listeners each action and the state before the action"""
+        state = copy.deepcopy(state)
         for listener in self.listeners:
             listener(state, action)
     
