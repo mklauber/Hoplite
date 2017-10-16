@@ -20,3 +20,14 @@ def Counter():
     while True:
         yield i
         i += 1                               
+
+
+def merge(*iterables):
+    empty = object()
+    while True:
+        results = [next(i, empty) for i in iterables]
+        results = [x for x in results if x != empty]
+        if len(results) != 0:
+            yield tuple(results)
+        else:
+            raise StopIteration()
