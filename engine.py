@@ -11,32 +11,43 @@ logger = logging.getLogger(__name__)
 
 
 class InvalidMove(utils.HopliteError):
+    """Hoplite Error when the engine detects that a given move is not permitted during the current state."""
     pass
 
 class State(dict):
+    """This State object manages the current game state.  This involves the location of every item on the map, and
+       the order in which elements take their turns."""
+
     def __init__(self):
-        self.actors = []
+        self.actors = []    # Track the actors in a list.  We'll treat this a a queue for the purposes of turn order.
 
     def __setitem__(self, key, value):
+        """Tweak this to make sure every key is a tuple of two ints."""
         key = (int(key[0]), int(key[1]))
         super(State, self).__setitem__(key, value)
 
     def find(self, target):
+        """function to look up the location of an item in the state."""
         for key, value in self.items():
             if value == target:
                 return key
         raise KeyError()
 
     def __str__(self):
+        """Make printing the state nicer."""
         return "Actors: %s\nGrid: %s" % (self.actors, super(State, self).__str__())
 
 
 class Engine(object):
+    """An engine object manages the progression of the game.  It tracks turns and turn order, and determines reactions
+       to actions taken."""
+
     def __init__(self, history):
-        self.past = []
-        self.future = history
-        self.state = State()
-        self.listeners = set()
+        """Every engine has to have a starting state, which for simplicity is a history to replay."""
+        self.past = []          # All the previous turns
+        self.future = history   # All actions recorded but not played back against the stte
+        self.state = State()    # The current state of the game
+        self.listeners = set()  # listeners are functions that want to know about actions during the play of the game.
 
     def fast_forward(self):
         """Execute any remaining future items"""
@@ -49,78 +60,98 @@ class Engine(object):
             self.step_backward()
 
     def step_backward(self):
-        if len(self.past) == 0:
+        """Reverse one turn from the past against the current state"""
+
+        if len(self.past) == 0: # There are no previous turns, so don't do anything.
             return
-        turn = self.past.pop()
-        if len(self.state.actors) > 0:
-            actor = self.state.actors.pop()
-            self.state.actors.insert(0, actor)
+
+        turn = self.past.pop()                  # Get the previous turn
+        if len(self.state.actors) > 0:          # If there's more than one actor make
+            actor = self.state.actors.pop()     # sure to keep track of turn order.
+            self.state.actors.insert(0, actor)  #
         
-        for action in reversed(turn):
-            action.rollback(self.state)
-        self.future.insert(0, turn)
+        for action in reversed(turn):   # For every action (and reaction) in the turn
+            action.rollback(self.state) # Undo them in reverse order
+
+        self.future.insert(0, turn) # Add this turn to the future in case we want to redo it.
             
     def step_forward(self):
-        if len(self.future) == 0:
+        """Playback one turn from the future against the current state"""
+
+        if len(self.future) == 0: # There are no future turns, so don't do anything.
             return
-        turn = self.future.pop(0)
-        if len(self.state.actors) > 0:
-            actor = self.state.actors.pop(0)
-            self.state.actors.append(actor)
-        for action in turn:
-            self.emit(self.state, action)
-            action.execute(self.state)
-        self.past.append(turn)
+
+        turn = self.future.pop(0)               # Get the next turn
+        if len(self.state.actors) > 0:          # If there's more than one actor make
+            actor = self.state.actors.pop(0)    # sure to keep track of turn order.
+            self.state.actors.append(actor)     #
+
+        for action in turn:                 # For every action (and reaction) in the turn
+            self.emit(self.state, action)   # Announce them, and the current state.
+            action.execute(self.state)      # execute the action against the current state
+
+        self.past.append(turn) # Add this turn to the past in case we want to undo it.
     
     def emit(self, state, action):
         """Announce to any interested listeners each action and the state before the action"""
-        state = copy.deepcopy(state)
-        for listener in self.listeners:
+        state = copy.deepcopy(state)    # Copy the state so that progressing the game doesn't screw up event listeners
+        for listener in self.listeners: # who delay parsing the (state, action) messages.
             listener(state, action)
     
     def record(self, overwrite=False):
-        if overwrite == False and self.future != []:
+        """Record new actions for the game"""
+
+        if overwrite == False and self.future != []: # Sometimes we may not want to be able to record new actions.
             raise utils.HopliteError("Cannot record a turn when future turns exist unless the overwrite flag is True")
 
-        actor = self.state.actors[0]
-        action = actor.get_action(self.state)
-        if action.validate(self.state) == False:
-            raise InvalidMove("%s is not permitted" % action)
+        actor = self.state.actors[0]            # Get the current actor, and ask them for their action, given the state
+        action = actor.get_action(self.state)   # Heroes may raise a NeedsInput Exception here for the UI to respond to.
+
+        if action.validate(self.state) == False:                # Validate the action requested is valid, otherwise
+            raise InvalidMove("%s is not permitted" % action)   # raise an error to the user to respond to.
 
 
-        # Once we know the actor is going to act
-        # # Cycle the actors
+        # Once we know the actor has a valid action, move them to the end of the turn order
         self.state.actors.append(self.state.actors.pop(0))
-                
+
+        # Copy the state, because determining reactions requires us to modify the current state (in case a reaction
+        # prevents a future reaction).  So we copy the state, and then apply them later.
+        state = copy.deepcopy(self.state)
+
         actions = [action]
         turn = []
-        while len(actions) != 0:
+        while len(actions) != 0: # While we have an action left in the turn
             action = actions.pop(0)
-            reactions = determine_reactions(action, self.state)
-            actions = reactions + actions
-            action.execute(self.state)
-            turn.append(action)
-        
-        self.past.append(turn)
-        self.step_backward()
+            reactions = determine_reactions(action, state) # Determine the reaction that action triggers
+            actions = reactions + actions   # Insert them immediately after the action that triggers them.
+            action.execute(state)      # Modify the current state by executing the action
+            turn.append(action)             # Add it to the turn.
+
+        # Once we've generated the full turn, add it to the future, and then just fast forward, so we can reuse our
+        # code for applying and announcing actions.
+        self.future.append(turn)
         self.fast_forward()
 
 
 def determine_reactions(action, state):
-    reactions = []
-    for behavior in REACTIONS:
+    """For our game, certain actions can cause reactions that should happen during the same turn.
+       For example, Moving past an enemy may trigger a slash Action."""
+
+    reactions = []              # make a list of all reactions triggered by the action,
+    for behavior in REACTIONS:  # by iterating through the reactions and asking them
         reactions.extend(behavior(action, state))
     return reactions
 
 
 def load_level(filename):
+    """Load a level from a history file."""
     result = []
     with open(utils.data_file(filename), 'r') as f:
         level = json.loads(f.read())
     for turn in level:
         computed = []
         for action in turn:
-            computed.append(CreateAction(action))
+            computed.append(CreateAction(action)) # Turn every action into an action object, not just a dict
         result.append(computed)
     return result
 

@@ -2,6 +2,7 @@ import ast
 import curses
 import sys
 import textwrap
+import json
 
 import engine
 import shared
@@ -37,7 +38,7 @@ class LevelScreen(object):
     def progress(self, screen):
         while len(self.events) > 0:
             state, action = self.events.pop(0)
-            logger.debug("Rendering %s", action)
+            #logger.debug("Rendering %s", action)
             animation = Animation.create(action)
             animation.render(screen, state)
 
@@ -98,3 +99,5 @@ class LevelScreen(object):
             self.progress(screen)
 
         logger.debug("Game Complete")
+        with open(utils.data_file("Last Game.json"), 'w') as f:
+            f.write(json.dumps(self.engine.past, indent=2))

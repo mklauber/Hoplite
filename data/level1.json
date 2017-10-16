@@ -1,5 +1,14 @@
 [
     [
+
+        {
+            "type":"Spawn",
+            "target": [1,0],
+            "element": {
+               "type": "Hero",
+               "team": "red"
+            }
+        },
         {
             "type":"Spawn",
             "target": [0,0],
@@ -10,18 +19,10 @@
         },
         {
             "type":"Spawn",
-            "target": [7,4],
+            "target": [10,0],
             "element": {
-               "type": "Archer",
-               "team": "blue"
-            }
-        },
-        {
-            "type":"Spawn",
-            "target": [8,-3],
-            "element": {
-               "type": "Hero",
-               "team": "red"
+                "type": "Archer",
+                "team": "blue"
             }
         }
     ]
