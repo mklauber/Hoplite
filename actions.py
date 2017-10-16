@@ -72,6 +72,8 @@ class Move(Action):
         if "Move" not in self.element["abilities"]:
             logger.debug("%s does not have the ability to Move")
             return False
+        if self.target not in grid.neighbors(state.find(self.element)):
+            return False
         if self.target in state:
             logger.debug("%s tried to move to %s, which is occupied by %s",
                          self.element, self.target, state[self.target])

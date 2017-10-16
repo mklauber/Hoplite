@@ -1,15 +1,26 @@
+import ast
 import curses
+import sys
 import textwrap
 
 import engine
+import actions
 from ui.cursesUI.animations import Animation, Static as StaticAnimation
 import utils
 
 import logging
 logger = logging.getLogger(__name__)
 
-def parseInput(string):
-    pass
+
+def process(command, key):
+    if key == curses.ascii.ESC:
+        sys.exit(0)
+    elif key == curses.KEY_BACKSPACE:
+        return command[:-1]
+    elif curses.ascii.isprint(key):
+        return command + chr(key)
+    else:
+        return command
 
 class LevelScreen(object):
     def __init__(self, level):
@@ -37,7 +48,23 @@ class LevelScreen(object):
         while screen.getch() != curses.ascii.NL:
             pass
 
-    def get_input(self):
+    def get_input(self, screen):
+        key = screen.getch()
+        command = ""
+        while key != curses.ascii.NL:
+            command = process(command, key)
+            screen.addstr(1, 1, " " * 56)
+            screen.addstr(1, 1, command[-56:])
+
+            # Get the next input
+            key = screen.getch()
+
+        name, location = command.split(" ", 1)
+        location = ast.literal_eval(location.strip())
+        return actions.CreateAction({"type": name,
+                                     "element": self.engine.state.actors[0],
+                                     "target":location})
+
         raise utils.HopliteError("Input is not implemented for curses.UI yet")
 
     def __call__(self, screen, replay=True, *args, **kwargs):
@@ -52,16 +79,18 @@ class LevelScreen(object):
         StaticAnimation().render(screen, self.engine.state)
 
         while len(set(u['team'] for u in self.engine.state.values())) > 1:
+            StaticAnimation().render(screen, self.engine.state)
             try:
                 self.engine.record()
             except engine.RequiresInput:
-                self.get_input()
+                action = self.get_input(screen)
+                self.engine.state.actors[0].set_next_action(action)
                 continue
             except engine.InvalidMove as e:
                 self.error_message(screen, e)
                 continue
-            except Exception:
-                raise
 
             # Render
             self.progress(screen)
+
+        logger.debug("Game Complete")

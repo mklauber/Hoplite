@@ -6,7 +6,7 @@ class InvalidPositionError(HopliteError):
 
 def get_offset(pos):
     L, R = pos
-    row = 3 + 2 * L + R
+    row = 4 + 2 * L + R
     col = 28 + R * 6
     return row, col
 
@@ -15,5 +15,5 @@ def get_cell(row, col):
         raise InvalidPositionError()
     row, col = float(row), float(col)
     R = int(math.ceil((col - 30) / 6))
-    L = int(math.ceil((row - 3 -R) / 2))
+    L = int(math.ceil((row - 4 -R) / 2))
     return (L, R)

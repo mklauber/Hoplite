@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def get_background():
-    background = curses.newwin(27, 58)
+    background = curses.newwin(28, 58)
     background.border()
 
     with open(utils.data_file('background.txt')) as f:
@@ -36,7 +36,7 @@ def render_unit(position, unit, win):
 
 
 def render(state):
-    win = curses.newwin(27, 58)
+    win = curses.newwin(28, 58)
 
     for position, item in state.items():
         render_unit(position, item, win)
@@ -123,6 +123,7 @@ class Stab(Animation):
             background.overwrite(stdscr)
             elements.overlay(stdscr)
             stdscr.addstr(sRow, sCol, "_", curses.A_DIM)
-            stdscr.addstr(tRow, tCol, "_", curses.A_DIM)
+            if state[self.target]['health'] - self.action.damage <= 0:
+                stdscr.addstr(tRow, tCol, "_", curses.A_DIM)
             stdscr.addstr(row, col, *UNITS[type])
             stdscr.getch()
