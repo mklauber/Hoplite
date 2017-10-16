@@ -110,10 +110,6 @@ class Engine(object):
         if action.validate(self.state) == False:                # Validate the action requested is valid, otherwise
             raise InvalidMove("%s is not permitted" % action)   # raise an error to the user to respond to.
 
-
-        # Once we know the actor has a valid action, move them to the end of the turn order
-        self.state.actors.append(self.state.actors.pop(0))
-
         # Copy the state, because determining reactions requires us to modify the current state (in case a reaction
         # prevents a future reaction).  So we copy the state, and then apply them later.
         state = copy.deepcopy(self.state)

@@ -73,31 +73,33 @@ class LevelScreen(object):
         raise utils.HopliteError("Input is not implemented for curses.UI yet")
 
     def __call__(self, screen, replay=True, *args, **kwargs):
-        if replay == True:
-            self.engine.listeners.add(self.listener)
-            self.engine.fast_forward()
-            self.progress(screen)
-        else:
-            self.engine.fast_forward()
-            self.engine.listeners.add(self.listener)
+        try:
+            if replay == True:
+                self.engine.listeners.add(self.listener)
+                self.engine.fast_forward()
+                self.progress(screen)
+            else:
+                self.engine.fast_forward()
+                self.engine.listeners.add(self.listener)
 
-        StaticAnimation().render(screen, self.engine.state)
-
-        while len(set(u['team'] for u in self.engine.state.values())) > 1:
             StaticAnimation().render(screen, self.engine.state)
-            try:
-                self.engine.record()
-            except units.RequiresInput:
-                action = self.get_input(screen)
-                self.engine.state.actors[0].set_next_action(action)
-                continue
-            except engine.InvalidMove as e:
-                self.error_message(screen, e)
-                continue
 
-            # Render
-            self.progress(screen)
+            while len(set(u['team'] for u in self.engine.state.values())) > 1:
+                StaticAnimation().render(screen, self.engine.state)
+                try:
+                    self.engine.record()
+                except units.RequiresInput:
+                    action = self.get_input(screen)
+                    self.engine.state.actors[0].set_next_action(action)
+                    continue
+                except engine.InvalidMove as e:
+                    self.error_message(screen, e)
+                    continue
 
-        logger.debug("Game Complete")
-        with open(utils.data_file("Last Game.json"), 'w') as f:
-            f.write(json.dumps(self.engine.past, indent=2))
+                # Render
+                self.progress(screen)
+
+            logger.debug("Game Complete")
+        finally:
+            with open(utils.data_file("autosave.json"), 'w') as f:
+                f.write(json.dumps(self.engine.past, indent=2))
