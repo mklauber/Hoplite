@@ -111,7 +111,7 @@ class Engine(object):
             raise InvalidMove("%s is not permitted" % action)   # raise an error to the user to respond to.
 
         # Copy the state, because determining reactions requires us to modify the current state (in case a reaction
-        # prevents a future reaction).  So we copy the state, and then apply them later.
+        # causes a future reaction).  So we copy the state, and then apply them to our main state later.
         state = copy.deepcopy(self.state)
 
         actions = [action]
