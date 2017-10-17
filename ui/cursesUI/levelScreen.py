@@ -36,24 +36,29 @@ class LevelScreen(object):
         self.events.append((state, action))
 
     def progress(self, screen):
+        """Handle and events that have occurred since the last time we've updated the UI.
+           Events are recorded by self.listener.  Here we animate them.  Separating this allows us to combine
+           animations in the future if we desire."""
         while len(self.events) > 0:
-            state, action = self.events.pop(0)
-            #logger.debug("Rendering %s", action)
-            animation = Animation.create(action)
-            animation.render(screen, state)
+            state, action = self.events.pop(0)      # Get the first event
+            animation = Animation.create(action)    # Create an animation for it
+            animation.render(screen, state)         # execute the animation.
 
     def error_message(self, screen, error):
-        logger.debug("Error Message")
-        win = curses.newwin(21, 52)
-        win.border()
-        lines = textwrap.wrap(error.message, 50)
-        for i, line in enumerate(lines, start=1):
+        """Display an error message to the user."""
+        win = curses.newwin(21, 52)                 # Create a new window to display the error message.
+        win.border()                                # Add a border for appearances
+        lines = textwrap.wrap(error.message, 50)    # Our error message may not fit in one line.  wrap it.
+
+        for i, line in enumerate(lines, start=1):   # Add the lines of our error message to our window.
             win.addstr(i, 1, line)
-        win.overwrite(screen, 0, 0, 4, 3, 24, 55)
-        while screen.getch() != curses.ascii.NL:
+
+        win.overwrite(screen, 0, 0, 4, 3, 24, 55)   # Display the message in the center of our display
+        while screen.getch() != curses.ascii.NL:    # Then wait until the user hits enter to continue
             pass
 
     def get_input(self, screen):
+        """Allow the user to enter a command for the current Actor."""
         key = screen.getch()
         command = ""
         while key != curses.ascii.NL:
@@ -71,6 +76,7 @@ class LevelScreen(object):
                                          "element": self.engine.state.actors[0],
                                          "target":location})
         except:
+            self.error_message("Unable to parse that command.")
             return None
 
         raise utils.HopliteError("Input is not implemented for curses.UI yet")

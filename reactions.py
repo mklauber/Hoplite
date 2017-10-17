@@ -11,7 +11,7 @@ def slash(action, state):
 
     # Check to make sure the actor is Moving and that they can slash
     if not isinstance(action, actions.Move) or "Slash" not in action['element']['abilities']:
-        return []   #
+        return []
     
     actor   = action['element']
     src     = state.find(actor)
@@ -34,6 +34,36 @@ def slash(action, state):
             results.append(reaction)
             
     return results
+
+
+def lunge(action, state):
+    """The Slash action is triggered if a character able to slash steps past an enemy"""
+
+    # Check to make sure the actor is Moving and that they can slash
+    if not isinstance(action, actions.Move) or "Lunge" not in action['element']['abilities']:
+        return []
+
+    actor   = action['element']
+    src     = state.find(actor)
+    dest    = action['target']
+
+    # confirm this is a move in a direction we can lunge.
+    vector = grid.unit_vector(src, dest)
+    if vector not in grid.DIRECTIONS:
+        return []
+
+    # Determine the target, which is the destination + the vector
+    target = (dest[0] + vector[0], dest[1] + vector[1])
+    if target in state and actor['team'] != state[target]['team']:
+        # If so, add a Slash Action as a reaction.
+        reaction = CreateAction({
+            "type": "Lunge",
+            "element": actor,
+            "target": target
+        })
+        logger.debug("%s triggered %s", action, reaction)
+        return [reaction]
+    return []
 
 
 def die(action, state):
@@ -60,4 +90,4 @@ def die(action, state):
 
 
 # Expose these as an list.
-REACTIONS = [slash, die]
+REACTIONS = [slash, lunge, die]
