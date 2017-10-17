@@ -140,7 +140,9 @@ def unit_vector(src, dest):
     """Normalize the distance between two cells, such that the longest either direction is one."""
     sL, sR = src
     dL, dR = dest
-    denominator = abs(max(dL - sL, dR - sR))
+    denominator = max(abs(dL - sL), abs(dR - sR))
     return (int((dL - sL) / denominator) if denominator != 0 else 0,
             int((dR - sR) / denominator) if denominator != 0 else 0)
 
+def add(start, vector):
+    return (start[0] + vector[0], start[1] + vector[1])
