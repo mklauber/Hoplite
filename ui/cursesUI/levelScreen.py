@@ -15,9 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def process(command, key):
-    if key == curses.ascii.ESC:
-        sys.exit(0)
-    elif key == curses.KEY_BACKSPACE:
+    if key == curses.KEY_BACKSPACE:
         return command[:-1]
     elif curses.ascii.isprint(key):
         return command + chr(key)
@@ -44,11 +42,11 @@ class LevelScreen(object):
             animation = Animation.create(action)    # Create an animation for it
             animation.render(screen, state)         # execute the animation.
 
-    def error_message(self, screen, error):
+    def error_message(self, screen, message):
         """Display an error message to the user."""
         win = curses.newwin(21, 52)                 # Create a new window to display the error message.
         win.border()                                # Add a border for appearances
-        lines = textwrap.wrap(error.message, 50)    # Our error message may not fit in one line.  wrap it.
+        lines = textwrap.wrap(message, 50)    # Our error message may not fit in one line.  wrap it.
 
         for i, line in enumerate(lines, start=1):   # Add the lines of our error message to our window.
             win.addstr(i, 1, line)
@@ -62,6 +60,8 @@ class LevelScreen(object):
         key = screen.getch()
         command = ""
         while key != curses.ascii.NL:
+            if key == curses.ascii.ESC:
+                sys.exit(0)
             command = process(command, key)
             screen.addstr(1, 1, " " * 56)
             screen.addstr(1, 1, command[-56:])
@@ -76,7 +76,7 @@ class LevelScreen(object):
                                          "element": self.engine.state.actors[0],
                                          "target":location})
         except:
-            self.error_message("Unable to parse that command.")
+            self.error_message( screen, "Unable to parse that command.")
             return None
 
         raise utils.HopliteError("Input is not implemented for curses.UI yet")
@@ -102,7 +102,7 @@ class LevelScreen(object):
                     self.engine.state.actors[0].set_next_action(action)
                     continue
                 except engine.InvalidMove as e:
-                    self.error_message(screen, e)
+                    self.error_message(screen, e.message)
                     continue
 
                 # Render
