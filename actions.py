@@ -121,3 +121,34 @@ class Die(Action):
         state.actors.insert(self.turn_position, self.element)
         state[self.target] = self.element
 
+class Bash(Action):
+    def execute(self, state):
+        self.vector = grid.unit_vector(state.find(self.element), self.target)
+        logger.debug("Vector: %s", self.vector)
+        logger.debug("element: %s", state.find(self.element))
+        logger.debug("Target: %s", self.target)
+
+        actor = state.pop(self.target, None)
+        logger.debug("Actor: %s", actor)
+        if actor != None:
+            destination = grid.add(self.target, self.vector)
+            logger.debug(destination)
+            state[destination] = actor
+
+
+    def rollback(self, state):
+        actor = state.pop(grid.add(self.target, self.vector), None)
+        if actor != None:
+            state[self.target] = self.actor
+
+    def validate(self, state):
+        if self.target not in grid.neighbors(state.find(self.element)):
+            return False
+
+        if not grid.isValid(self.target):
+            return False
+
+        if self.target in state and 'Bashable' not in state[self.target]['abilities']:
+            return False
+
+        return True

@@ -3,7 +3,7 @@
 
         {
             "type":"Spawn",
-            "target": [1,0],
+            "target": [2,-1],
             "element": {
                "type": "Hero",
                "team": "red"

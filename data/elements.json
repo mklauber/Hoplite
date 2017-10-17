@@ -25,7 +25,7 @@
     "abilities": []
   },
   "Hero": {
-    "abilities": ["Slash", "Lunge", "Move", "Health", "Bashable"],
+    "abilities": ["Slash", "Lunge", "Move", "Health", "Bashable", "Bash"],
     "health": 3
   }
 }
