@@ -6,7 +6,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--ui', help="Choose the output UI", type=str, choices=['terminal', 'curses', 'pygame'])
+parser.add_argument('--ui', help="Choose the output UI", type=str,
+                    choices=['terminal', 'curses', 'pygame'], default="curses")
 parser.add_argument('--test', type=str, choices=['engine'])
 
 
