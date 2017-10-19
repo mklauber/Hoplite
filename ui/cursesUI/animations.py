@@ -63,6 +63,12 @@ def text_path(src, dest):
 class Animation(object):
     __metaclass__ = ABCMeta
 
+    def __init__(self, action):
+        self.action = action
+        self.target = action['target']
+        self.element = action['element']
+
+
     @classmethod
     def create(cls, action):
         for klass in utils.all_subclasses(cls):
@@ -88,42 +94,66 @@ class Static(Animation):
 
 
 class Die(Animation):
-    def __init__(self, action):
-        pass
 
     def render(self, screen, state):
         pass
 
 
 class Stab(Animation):
-    def __init__(self, action):
-        self.action = action
-        self.target = action['target']
-        self.element = action['element']
+
+    def frames(self, state):
+        source = state.find(self.element)
+
+        sRow, sCol = get_offset(source)
+        tRow, tCol = get_offset(self.target)
+        type = self.action["element"]["type"]
+
+        # Path to Stab
+        for row, col in text_path(source, self.target):
+            def path_to_stab(screen):
+                screen.addstr(sRow, sCol, "_", curses.A_DIM)
+                screen.addstr(row, col, *UNITS[type])
+            yield path_to_stab
+
+        # Path from Stab
+        for row, col in text_path(self.target, source):
+            def path_from_stab(screen):
+                screen.addstr(sRow, sCol, "_", curses.A_DIM)
+                if state[self.target]['health'] - self.action.damage <= 0:
+                    screen.addstr(tRow, tCol, "_", curses.A_DIM)
+                screen.addstr(row, col, *UNITS[type])
+            yield path_from_stab
+
+
+
 
     def render(self, stdscr, state):
         background = get_background()
         elements = render(state)
-        self.source = state.find(self.element)
-
-        sRow, sCol = get_offset(self.source)
-        tRow, tCol = get_offset(self.target)
-        type = self.action["element"]["type"]
 
         stdscr.timeout(150)
-        for row, col in text_path(self.source, self.target):
+        for frame in self.frames(state):
             background.overwrite(stdscr)
             elements.overlay(stdscr)
-            stdscr.addstr(sRow, sCol, "_", curses.A_DIM)
-            stdscr.addstr(row, col, *UNITS[type])
+            frame(stdscr)
             stdscr.getch()
 
 
-        for row, col in text_path(self.target, self.source):
+class Shoot(Animation):
+    def frames(self, state):
+        source = state.find(self.element)
+        for row, col in text_path(source, self.target):
+            def frame(screen):
+                screen.addstr(row, col, '|', COLORS['BLUE'] | curses.A_BOLD)
+            yield frame
+
+    def render(self, stdscr, state):
+        background = get_background()
+        elements = render(state)
+
+        stdscr.timeout(150)
+        for frame in self.frames(state):
             background.overwrite(stdscr)
             elements.overlay(stdscr)
-            stdscr.addstr(sRow, sCol, "_", curses.A_DIM)
-            if state[self.target]['health'] - self.action.damage <= 0:
-                stdscr.addstr(tRow, tCol, "_", curses.A_DIM)
-            stdscr.addstr(row, col, *UNITS[type])
+            frame(stdscr)
             stdscr.getch()
