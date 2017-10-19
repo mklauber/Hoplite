@@ -48,7 +48,38 @@ class Lunge(object):
 
 
 class Shoot(object):
-    pass
+    @classmethod
+    def get_action(cls, actor, state):
+        src = state.find(actor)
+
+        blocked = [d for d in grid.DIRECTIONS if grid.add(src, d) in state]
+
+        for i in range(2,5):
+            for direction in grid.DIRECTIONS:
+                if direction in blocked:    # Don't check cells that have something in the way.
+                    continue
+                target = grid.add(src, [direction[0] * i, direction[1] * i])
+                if target in state and state[target]['team'] != actor['team']:
+                    return CreateAction({"type": "Shoot",
+                                         "element": actor,
+                                         "target": target})
+                elif target in state and state[target]['team'] == actor['team']:
+                    blocked.append(direction)
+
+
+    @classmethod
+    def targets(cls, actor, state):
+        results = set()
+        for target, element in state.items():
+            if element['team'] != actor['team']:
+                results |= grid.lines(target, 5) - grid.lines(target, 1)
+        return results
+
+
+    @classmethod
+    def threatened_cells(cls, actor, state):
+        src = state.find(actor)
+        return grid.lines(src, 5) - grid.lines(src, 1)
 
 
 class WizardsBeam(object):

@@ -103,7 +103,33 @@ class DeepLunge(Attack):
     pass
 
 class Shoot(Attack):
-    pass
+    def validate(self, state):
+        source = state.find(self.element)
+        direction = grid.unit_vector(source, self.target)
+
+        # Must be in a straight line along an axis.
+        if direction not in grid.DIRECTIONS:
+            return False
+
+        # Can't shoot teammates
+        if "team" not in state.get(self.target, {}) or self.element['team'] == state[self.target]['team']:
+            return False
+
+        for i in range(1, 5):
+            offset = (direction[0] * i, direction[1] * i)
+            cell = grid.add(source, offset)
+
+            if cell not in state:       # Empty cells pass though
+                continue
+            elif cell != self.target:   # Anything in the way of the attack stops it.
+                return False            #
+            elif cell == self.target:
+                if i == 1:              # Special Case: Can't shoot someone next to you.
+                    return False
+                return True             # Foudn the target, and there's nothing in the way.  Shoot it!
+        return False
+
+
 
 class WizardsBeam(Attack):
     pass
