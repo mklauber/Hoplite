@@ -8,11 +8,11 @@
     "health": 1
   },
   "Mage": {
-    "abilities": ["Stab", "Move", "Health", "Bashable"],
+    "abilities": ["WizardsBeam", "Move", "Health", "Bashable"],
     "health": 1
   },
   "Demolitionist": {
-     "abilities": ["Stab", "Move", "Health", "Bashable"],
+     "abilities": ["ThrowBomb", "Move", "Health", "Bashable"],
     "health": 1
   },
   "Bomb": {

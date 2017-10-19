@@ -129,8 +129,6 @@ class Shoot(Attack):
                 return True             # Foudn the target, and there's nothing in the way.  Shoot it!
         return False
 
-
-
 class WizardsBeam(Attack):
     pass
 
@@ -160,7 +158,6 @@ class Bash(Action):
             destination = grid.add(self.target, self.vector)
             logger.debug(destination)
             state[destination] = actor
-
 
     def rollback(self, state):
         actor = state.pop(grid.add(self.target, self.vector), None)

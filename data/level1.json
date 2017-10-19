@@ -11,7 +11,7 @@
         },
         {
             "type":"Spawn",
-            "target": [0,0],
+            "target": [2,0],
             "element": {
                 "type": "Archer",
                 "team": "blue"
@@ -19,7 +19,7 @@
         },
         {
             "type":"Spawn",
-            "target": [10,0],
+            "target": [2,1],
             "element": {
                 "type": "Archer",
                 "team": "blue"

@@ -118,6 +118,7 @@ class Engine(object):
         turn = []
         while len(actions) != 0: # While we have an action left in the turn
             action = actions.pop(0)
+            logger.debug(action)
             reactions = determine_reactions(action, state) # Determine the reaction that action triggers
             actions = reactions + actions   # Insert them immediately after the action that triggers them.
             action.execute(state)      # Modify the current state by executing the action

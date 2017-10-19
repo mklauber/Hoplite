@@ -1,0 +1,7 @@
+
+Highlight actor needing input
+Team colors (Implement via team names being hex RGB codes?)
+Combine Animations
+Move all calls to getch into LevelScreen.__call__
+
+Animate Die
