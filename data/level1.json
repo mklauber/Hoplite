@@ -22,7 +22,7 @@
             "target": [2,1],
             "element": {
                 "type": "Archer",
-                "team": "blue"
+                "team": ""
             }
         }
     ]

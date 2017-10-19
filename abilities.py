@@ -58,7 +58,7 @@ class Shoot(object):
             for direction in grid.DIRECTIONS:
                 if direction in blocked:    # Don't check cells that have something in the way.
                     continue
-                target = grid.add(src, [direction[0] * i, direction[1] * i])
+                target = grid.add(src, grid.mult(direction, i))
                 if target in state and state[target]['team'] != actor['team']:
                     return CreateAction({"type": "Shoot",
                                          "element": actor,

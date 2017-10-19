@@ -52,8 +52,8 @@ def lunge(action, state):
     if vector not in grid.DIRECTIONS:
         return []
 
-    # Determine the target, which is the destination + the vector
-    target = (dest[0] + vector[0], dest[1] + vector[1])
+    # Determine the target
+    target = grid.add(dest, vector)
     if target in state and actor['team'] != state[target]['team']:
         # If so, add a Slash Action as a reaction.
         reaction = CreateAction({
@@ -73,8 +73,7 @@ def die(action, state):
     if not isinstance(action, actions.Attack):
         return []
 
-    results = []
-    element = state[action['target']]
+    element = state[action.target]
 
     # Make sure the attack brings our health below 0
     if "Health" in element['abilities'] and (element["health"] - action.damage) <= 0:
@@ -82,11 +81,11 @@ def die(action, state):
         reaction = CreateAction({
             "type": "Die",
             "element": element,
-            "target": action['target']
+            "target": action.target
         })
         logger.debug("%s triggered %s", action, reaction)
-        results.append(reaction)
-    return results
+        return [reaction]
+    return []
 
 
 # Expose these as an list.

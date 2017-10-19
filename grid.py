@@ -29,7 +29,18 @@ VALID_CELLS = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (1, -1), (1, 0), (1, 1), 
 
 def arc(origin, direction, depth):
     """A set of cells extending from three neighbors of the start cell."""
-    raise NotImplementedError
+    results = set()
+    index = DIRECTIONS.index(direction)
+    for i in range(1,depth+1):
+        for j in range(index - 1, index + 2):
+            angle = DIRECTIONS[j % 6]
+
+            vector = mult(angle, i)
+            target = add(origin, vector)
+            if isValid(target):
+                results.add(target)
+    return results
+
 
 
 def burst(cell, distance=1):
@@ -146,3 +157,6 @@ def unit_vector(src, dest):
 
 def add(start, vector):
     return (start[0] + vector[0], start[1] + vector[1])
+
+def mult(vector, scalar):
+    return (vector[0] * scalar, vector[1] * scalar)
