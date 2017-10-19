@@ -124,9 +124,6 @@ class Stab(Animation):
                 screen.addstr(row, col, *UNITS[type])
             yield path_from_stab
 
-
-
-
     def render(self, stdscr, state):
         background = get_background()
         elements = render(state)
@@ -138,6 +135,12 @@ class Stab(Animation):
             frame(stdscr)
             stdscr.getch()
 
+
+class Slash(Stab):
+    pass
+
+class Lunge(Stab):
+    pass
 
 class Shoot(Animation):
     def frames(self, state):
