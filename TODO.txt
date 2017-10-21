@@ -5,3 +5,7 @@ Combine Animations
 Move all calls to getch into LevelScreen.__call__
 
 Animate Die
+
+Bash onto Lava:
+    lava reaction triggers Burn action (Subset of Die Action):
+    Burn action replaces burnt element with lava.

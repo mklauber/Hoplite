@@ -49,6 +49,13 @@ class Engine(object):
         self.state = State()    # The current state of the game
         self.listeners = set()  # listeners are functions that want to know about actions during the play of the game.
 
+    @property
+    def complete(self):
+        """Make knowing if the game is over simple
+           The game is over when one team remains."""
+        remaining_teams = set(u['team'] for u in self.state.values())
+        return len(remaining_teams) == 1
+
     def fast_forward(self):
         """Execute any remaining future items"""
         while self.future != []:

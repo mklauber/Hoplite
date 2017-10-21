@@ -93,7 +93,7 @@ class LevelScreen(object):
 
             StaticAnimation().render(screen, self.engine.state)
 
-            while len(set(u['team'] for u in self.engine.state.values())) > 1:
+            while self.engine.complete == False:
                 StaticAnimation().render(screen, self.engine.state)
                 try:
                     self.engine.record()
