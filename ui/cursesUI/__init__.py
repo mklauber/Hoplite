@@ -1,6 +1,8 @@
 import curses
 import curses.ascii
+import locale
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +16,10 @@ def start():
 
     def main(stdscr):
         curses.curs_set(0)
+        locale.setlocale(locale.LC_ALL, '')
+
+        logger.debug("Supported Attributes: %s", curses.termattrs())
+        logger.debug("Blink: %s", curses.termattrs() &  curses.A_BLINK)
 
         # Setup colors for later
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)

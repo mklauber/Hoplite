@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import ast
 import curses
 import sys
@@ -6,7 +7,9 @@ import json
 
 import engine
 import shared
+from ui.cursesUI import offset
 from ui.cursesUI.animations import Animation, Static as StaticAnimation
+from ui.cursesUI.colors import COLORS
 import units
 import utils
 
@@ -42,7 +45,7 @@ class LevelScreen(object):
             animation = Animation.create(action)    # Create an animation for it
             animation.render(screen, state)         # execute the animation.
 
-    def error_message(self, screen, message):
+    def message(self, screen, message):
         """Display an error message to the user."""
         win = curses.newwin(21, 52)                 # Create a new window to display the error message.
         win.border()                                # Add a border for appearances
@@ -54,6 +57,17 @@ class LevelScreen(object):
         win.overwrite(screen, 0, 0, 4, 3, 24, 55)   # Display the message in the center of our display
         while screen.getch() != curses.ascii.NL:    # Then wait until the user hits enter to continue
             pass
+
+    def highlight_char(self, screen):
+        """Wrapper function for everything required to highlight a given cell."""
+        r, c = offset.get_offset(self.engine.state.find(self.engine.state.actors[0]))
+        attrs = (screen.inch(r, c) & curses.A_ATTRIBUTES) | curses.A_REVERSE
+        screen.chgat(r, c, 1, attrs)
+
+    def draw_health(self, screen):
+        """Draw the health of the current Hero.
+           Should only be called on units that are waiting for player input"""
+        screen.addstr(3,2, "Health: "+ u"♥".encode("utf-8") * self.engine.state.actors[0]['health'], COLORS['RED']| curses.A_BOLD)
 
     def get_input(self, screen):
         """Allow the user to enter a command for the current Actor."""
@@ -76,10 +90,8 @@ class LevelScreen(object):
                                          "element": self.engine.state.actors[0],
                                          "target":location})
         except:
-            self.error_message( screen, "Unable to parse that command.")
+            self.message(screen, "Unable to parse that command.")
             return None
-
-        raise utils.HopliteError("Input is not implemented for curses.UI yet")
 
     def __call__(self, screen, replay=True, *args, **kwargs):
         try:
@@ -98,17 +110,31 @@ class LevelScreen(object):
                 try:
                     self.engine.record()
                 except units.RequiresInput:
+                    self.draw_health(screen)
+                    self.highlight_char(screen)
                     action = self.get_input(screen)
                     self.engine.state.actors[0].set_next_action(action)
                     continue
                 except engine.InvalidMove as e:
-                    self.error_message(screen, e.message)
+                    self.message(screen, e.message)
                     continue
 
                 # Render
                 self.progress(screen)
 
-            logger.debug("Game Complete")
-        finally:
+        except:
             with open(utils.data_file("autosave.json"), 'w') as f:
                 f.write(json.dumps(self.engine.past, indent=2))
+                raise
+
+        if self.engine.state.actors[0]['team'] == 'red':
+            self.message(screen, "Congrats, you've beaten the level")
+            return LevelScreen('level1.json')
+        else:
+            self.message(screen, "I'm sorry, you've died.")
+            from ui.cursesUI.titleScreen import TitleScreen
+            return TitleScreen()
+
+        logger.debug("Game Complete")
+
+

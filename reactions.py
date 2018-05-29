@@ -23,7 +23,7 @@ def slash(action, state):
     results = []
     for target in targets:
         # for every cell in targets, check if an enemy is present
-        if target in state and actor['team'] != state[target]['team']:
+        if target in state and actor['team'] != state[target]['team'] and "Health" in state[target]['abilities']:
             # If so, add a Slash Action as a reaction.
             reaction = CreateAction({
                 "type": "Slash",
@@ -54,7 +54,7 @@ def lunge(action, state):
 
     # Determine the target
     target = grid.add(dest, vector)
-    if target in state and actor['team'] != state[target]['team']:
+    if target in state and actor['team'] != state[target]['team']  and "Health" in state[target]['abilities']:
         # If so, add a Slash Action as a reaction.
         reaction = CreateAction({
             "type": "Lunge",

@@ -35,6 +35,7 @@ def render_unit(position, unit, win):
         win.addstr(row, col, *UNITS['Mage'])
 
 
+
 def render(state):
     win = curses.newwin(28, 58)
 

@@ -35,6 +35,7 @@ class Move(object):
             return CreateAction({"type": "Move",
                                  "element": actor,
                                  "target": path[1]})
+
         except grid.NoPathExistsError:
             return None
 
@@ -72,6 +73,7 @@ class Shoot(object):
         results = set()
         for target, element in state.items():
             if element['team'] != actor['team']:
+                # TODO: This does not handle issues with someone between the archer and the target.
                 results |= grid.lines(target, 5) - grid.lines(target, 1)
         return results
 
@@ -101,7 +103,6 @@ class Jump(object):
 class Burn(object):
     pass
 
-
 class Prayer(object):
     pass
 
@@ -116,6 +117,7 @@ class DeepLunge(object):
 
 class Bashable(object):
     pass
+
 
 class Health(object):
     pass

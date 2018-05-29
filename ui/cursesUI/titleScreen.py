@@ -31,7 +31,7 @@ class TitleScreen(object):
             return LevelScreen('level1.json')
 
     def __call__(self, stdscr):
-        win = curses.newwin(27,58)
+        win = curses.newwin(28,58)
         win.border()
         stdscr.timeout(100)
 
@@ -51,4 +51,3 @@ class TitleScreen(object):
             result = self.handle(stdscr.getch())
             if result:
                 return result
-
