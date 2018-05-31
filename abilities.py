@@ -26,6 +26,7 @@ class Stab(object):
     def threatened_cells(cls, actor, state):
         return grid.neighbors(state.find(actor))
 
+
 class Move(object):
 
     @classmethod
@@ -102,6 +103,7 @@ class Jump(object):
 
 class Burn(object):
     pass
+
 
 class Prayer(object):
     pass

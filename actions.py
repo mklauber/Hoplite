@@ -144,3 +144,4 @@ class Die(Action):
     def rollback(self, state):
         state.actors.insert(self.turn_position, self.element)
         state[self.target] = self.element
+
