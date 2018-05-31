@@ -76,6 +76,7 @@ class Animation(object):
             if action.get('type', None) == klass.__name__:
                 logger.info("Creating %s Animation", klass.__name__)
                 return klass(action)
+        logger.info("Defaulting to StaticAnimation for %s", action)
         return Static(action)
 
     @abstractmethod
@@ -92,6 +93,33 @@ class Static(Animation):
         get_background().overwrite(stdscr)
         render(state).overlay(stdscr)
         stdscr.getch()
+
+
+class Move(Animation):
+    def frames(self, state):
+        source = state.find(self.element)
+
+        sRow, sCol = get_offset(source)
+        type = self.action["element"]["type"]
+
+        # Path to new square
+        for row, col in text_path(source, self.target):
+            def path_to_stab(screen):
+                screen.addstr(sRow, sCol, "_", curses.A_DIM)
+                screen.addstr(row, col, *UNITS[type])
+
+            yield path_to_stab
+
+    def render(self, stdscr, state):
+        background = get_background()
+        elements = render(state)
+
+        stdscr.timeout(150)
+        for frame in self.frames(state):
+            background.overwrite(stdscr)
+            elements.overlay(stdscr)
+            frame(stdscr)
+            stdscr.getch()
 
 
 class Die(Animation):
