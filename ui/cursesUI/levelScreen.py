@@ -17,6 +17,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class QuitError(utils.HopliteError):
+    pass
+
 def process(command, key):
     if key == curses.KEY_BACKSPACE:
         return command[:-1]
@@ -83,13 +86,17 @@ class LevelScreen(object):
             # Get the next input
             key = screen.getch()
 
+        if command.lower() == "quit":
+            raise QuitError
+
         try:
             name, location = command.split(" ", 1)
             location = ast.literal_eval(location.strip())
             return shared.CreateAction({"type": name,
                                          "element": self.engine.state.actors[0],
                                          "target":location})
-        except:
+        except shared.InvalidAction as e:
+            logger.warn("Unable to parse: %s" % e.message)
             self.message(screen, "Unable to parse that command.")
             return None
 
@@ -122,6 +129,11 @@ class LevelScreen(object):
                 # Render
                 self.progress(screen)
 
+        except QuitError:
+            with open(utils.data_file("autosave.json"), 'w') as f:
+                f.write(json.dumps(self.engine.past, indent=2))
+            from ui.cursesUI.titleScreen import TitleScreen
+            return TitleScreen()
         except:
             with open(utils.data_file("autosave.json"), 'w') as f:
                 f.write(json.dumps(self.engine.past, indent=2))
