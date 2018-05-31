@@ -76,12 +76,12 @@ class Engine(object):
         if len(self.state.actors) > 0:          # If there's more than one actor make
             actor = self.state.actors.pop()     # sure to keep track of turn order.
             self.state.actors.insert(0, actor)  #
-        
+
         for action in reversed(turn):   # For every action (and reaction) in the turn
             action.rollback(self.state) # Undo them in reverse order
 
         self.future.insert(0, turn) # Add this turn to the future in case we want to redo it.
-            
+
     def step_forward(self):
         """Playback one turn from the future against the current state"""
 
@@ -98,13 +98,13 @@ class Engine(object):
             action.execute(self.state)      # execute the action against the current state
 
         self.past.append(turn) # Add this turn to the past in case we want to undo it.
-    
+
     def emit(self, state, action):
         """Announce to any interested listeners each action and the state before the action"""
         state = copy.deepcopy(state)    # Copy the state so that progressing the game doesn't screw up event listeners
         for listener in self.listeners: # who delay parsing the (state, action) messages.
             listener(state, action)
-    
+
     def record(self, overwrite=False):
         """Record new actions for the game"""
 
@@ -158,26 +158,3 @@ def load_level(filename):
             computed.append(CreateAction(action)) # Turn every action into an action object, not just a dict
         result.append(computed)
     return result
-
-
-def test():
-    def listener(state, action):
-        print state
-        print action
-        print
-
-    level = load_level('level1.json')
-    e = Engine(level)
-
-    e.listeners.add(listener)
-    e.fast_forward()
-
-    while len(set(u['team'] for u in e.state.values())) > 1:
-        e.record()
-
-    print json.dumps(e.past, indent=2)
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level="DEBUG")
-    test()
