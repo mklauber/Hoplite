@@ -139,7 +139,13 @@ class ThrowBomb(object):
 
 
 class Explode(object):
-    pass
+    @classmethod
+    def get_action(cls, actor, state):
+        return CreateAction({
+            'type': "Explode",
+            'element': actor,
+            'target': state.find(actor)
+        })
 
 
 class Jump(object):

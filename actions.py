@@ -181,7 +181,17 @@ class WizardsBeam(Attack):
     pass
 
 class Explode(Attack):
-    pass
+    def execute(self, state):
+        state.actors.remove(self.element)
+        del state[self.target]
+
+    def rollback(self, state):
+        state.actors.insert(0, self.element)
+        state[self.target] = self.element
+
+    def validate(self, state):
+        return True
+
 
 class Die(Action):
     def execute(self, state):
