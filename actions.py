@@ -67,11 +67,16 @@ class ThrowBomb(Action):
         self.bomb = CreateUnit(type='Bomb', team=self.element['team'])
 
     def execute(self, state):
-        state.actors.append(self.bomb)
+        self.cooldown = self.element['bomb cooldown']
+        self.element['bomb cooldown'] = 3
+        last_hero = max(loc for loc, val in enumerate(state.actors) if val['type'] == 'Hero')
+        state.actors.insert(last_hero + 1, self.bomb)
         state[self.target] = self.bomb
 
     def rollback(self, state):
+
         state.actors.remove(self.bomb)
+        self.element['bomb cooldown'] = self.cooldown
         del state[self.bomb]
 
     def validate(self, state):
