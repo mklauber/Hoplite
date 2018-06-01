@@ -73,6 +73,9 @@ def die(action, state):
     if not isinstance(action, actions.Attack):
         return []
 
+    if action.target not in state:  # If the attack misses, ignore it.
+        return []
+
     element = state[action.target]
 
     # Make sure the attack brings our health below 0
@@ -88,27 +91,5 @@ def die(action, state):
     return []
 
 
-def explode(action, state):
-    """When a bomb explodes, everyone next to it is attacked"""
-
-    # We're using inheritance here to make checking if we were attacked simpler.
-    if not isinstance(action, actions.Explode):
-        return []
-
-    targets = grid.neighbors(action['target'])
-
-    results = []
-    for target in targets:
-        if target in state and "Health" in state[target]['abilities']:
-            reaction = CreateAction({
-                "type": "Attack",
-                "element": action['element'],
-                "target": target
-            })
-            logger.debug("%s triggered %s", action, reaction)
-            results.append(reaction)
-    return results
-
-
 # Expose these as an list.
-REACTIONS = [slash, lunge, die, explode]
+REACTIONS = [slash, lunge, die]

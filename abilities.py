@@ -11,9 +11,9 @@ class Stab(object):
     def get_action(cls, actor, state):
         for target in cls.threatened_cells(actor, state):
             if target in state and state[target]['team'] != actor['team']:
-                return CreateAction({"type": "Stab", 
+                return [CreateAction({"type": "Stab",
                                      "element": actor, 
-                                     "target": target})
+                                     "target": target})]
 
     @classmethod
     def targets(cls, actor, state):
@@ -35,17 +35,16 @@ class Move(object):
         try:
             path = grid.find_path(state, state.find(actor), actor.targets(state))
             if len(path) == 1:
-                return CreateAction({"type": "Null",
+                return [CreateAction({"type": "Null",
                                      "element": actor,
-                                     "target": state.find(actor)})
+                                     "target": state.find(actor)})]
 
-            return CreateAction({"type": "Move",
+            return [CreateAction({"type": "Move",
                                  "element": actor,
-                                 "target": path[1]})
+                                 "target": path[1]})]
 
         except grid.NoPathExistsError:
             return None
-
 
 
 class Slash(object):
@@ -69,9 +68,9 @@ class Shoot(object):
                     continue
                 target = grid.add(src, grid.mult(direction, i))
                 if target in state and state[target]['team'] != actor['team']:
-                    return CreateAction({"type": "Shoot",
+                    return [CreateAction({"type": "Shoot",
                                          "element": actor,
-                                         "target": target})
+                                         "target": target})]
                 elif target in state and state[target]['team'] == actor['team']:
                     blocked.append(direction)
 
@@ -114,6 +113,10 @@ class ThrowBomb(object):
         actor['bomb cooldown'] -= 1
         if actor['bomb cooldown'] <= 0:
             for cell in grid.burst(state.find(actor), 3):
+                if cell in state.keys():
+                    continue
+
+                # Check who we're targeting
                 neighbors = [state[c] for c in grid.neighbors(cell) if c in state]
                 teams = set(n['team'] for n in neighbors if 'team' in n)
                 if actor['team'] in teams:  # Can't hit allies.
@@ -121,11 +124,11 @@ class ThrowBomb(object):
                 elif len(teams) == 0:   # Don't target cells where you won't hit anyone.
                     continue
                 else:
-                    return CreateAction({
+                    return [CreateAction({
                         'type': "ThrowBomb",
                         'element': actor,
                         'target': cell
-                    })
+                    })]
 
     @classmethod
     def targets(cls, actor, state):
@@ -141,11 +144,19 @@ class ThrowBomb(object):
 class Explode(object):
     @classmethod
     def get_action(cls, actor, state):
-        return CreateAction({
+        results = []
+        results.append(CreateAction({
             'type': "Explode",
             'element': actor,
             'target': state.find(actor)
-        })
+        }))
+        for cell in grid.neighbors(state.find(actor)):
+            results.append(CreateAction({
+                'type': "BlastWave",
+                'element': actor,
+                'target': cell
+            }))
+        return results
 
 
 class Jump(object):

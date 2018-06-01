@@ -27,6 +27,7 @@ def start():
         curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_BLACK)
         curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
         curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+        curses.init_pair(6, curses.COLOR_YELLOW, curses.COLOR_RED)
 
 
         COLORS.update({
@@ -34,7 +35,8 @@ def start():
             'RED': curses.color_pair(2),
             'BLUE': curses.color_pair(3),
             'CYAN': curses.color_pair(4),
-            'MAGENTA': curses.color_pair(5)
+            'MAGENTA': curses.color_pair(5),
+            'FIRE': curses.color_pair(6)
         })
 
         UNITS.update({

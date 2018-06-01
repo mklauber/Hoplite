@@ -12,10 +12,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class InvalidMove(utils.HopliteError):
-    """Hoplite Error when the engine detects that a given move is not permitted during the current state."""
-    pass
-
 class State(dict):
     """This State object manages the current game state.  This involves the location of every item on the map, and
        the order in which elements take their turns."""
@@ -114,16 +110,12 @@ class Engine(object):
             raise utils.HopliteError("Cannot record a turn when future turns exist unless the overwrite flag is True")
 
         actor = self.state.actors[0]            # Get the current actor, and ask them for their action, given the state
-        action = actor.get_action(self.state)   # Heroes may raise a NeedsInput Exception here for the UI to respond to.
-
-        if action.validate(self.state) == False:                # Validate the action requested is valid, otherwise
-            raise InvalidMove("%s is not permitted" % action)   # raise an error to the user to respond to.
+        actions = actor.get_action(self.state)   # Heroes may raise a NeedsInput Exception here for the UI to respond to.
 
         # Copy the state, because determining reactions requires us to modify the current state (in case a reaction
         # causes a future reaction).  So we copy the state, and then apply them to our main state later.
         state = copy.deepcopy(self.state)
 
-        actions = [action]
         turn = []
         while len(actions) != 0: # While we have an action left in the turn
             action = actions.pop(0)

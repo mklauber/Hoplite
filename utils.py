@@ -3,6 +3,10 @@ from os import path
 class HopliteError(Exception):
     pass
 
+class InvalidMove(HopliteError):
+    """Hoplite Error when the engine detects that a given move is not permitted during the current state."""
+    pass
+
 DATA_DIR = path.join(path.dirname(__file__), 'data/')
 
 def data_file(name):

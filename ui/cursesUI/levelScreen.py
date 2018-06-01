@@ -16,6 +16,8 @@ import utils
 import logging
 logger = logging.getLogger(__name__)
 
+MAX_LEVELS = 9
+
 
 class QuitError(utils.HopliteError):
     pass
@@ -123,7 +125,7 @@ class LevelScreen(object):
                     action = self.get_input(screen)
                     self.engine.state.actors[0].set_next_action(action)
                     continue
-                except engine.InvalidMove as e:
+                except utils.InvalidMove as e:
                     self.message(screen, e.message)
                     continue
 
@@ -141,6 +143,8 @@ class LevelScreen(object):
                 raise
 
         if self.engine.state.actors[0]['team'] == 'red':
+            if self.level > MAX_LEVELS:
+                return TitleScreen()
             self.message(screen, "Congrats, you've beaten the level")
             return LevelScreen(self.level + 1)
         else:

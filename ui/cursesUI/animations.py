@@ -7,6 +7,8 @@ from ui.cursesUI import COLORS, UNITS
 from ui.cursesUI.offset import get_offset
 import utils
 
+import grid
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ def render_unit(position, unit, win):
         win.addstr(row, col, *UNITS['Archer'])
     elif unit['type'] == 'Demolitionist':
         data = copy(UNITS['Demolitionist'])
-        data[0] = 'D*' if unit['bomb cooldown'] <= 0 else 'D'
+        data[0] = 'D*' if unit['bomb cooldown'] <= 1 else 'D'
         win.addstr(row, col, *data)
     elif unit['type'] == 'Bomb':
         win.addstr(row, col, *UNITS['Bomb'])
@@ -193,3 +195,23 @@ class Shoot(Animation):
             def frame(screen):
                 screen.addstr(row, col, '|', COLORS['BLUE'] | curses.A_BOLD)
             yield frame
+
+
+class Explode(Animation):
+    def frames(self, state):
+
+        animation = ['/\\', '/  \\', '/\\/\\', '\\  /', '/\\/\\', '/\\']
+
+        for frame in animation:
+            def draw_flame(screen):
+                sRow, sCol = get_offset(self.target)
+                screen.addstr(sRow, sCol +1 - len(frame)/2, frame, COLORS['FIRE'])
+            yield draw_flame
+
+class BlastWave(Explode):
+    pass
+
+
+
+
+

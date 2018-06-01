@@ -93,4 +93,6 @@ class Hero(Unit):
         else:
             action = self.next_action
             self.next_action = None
-            return action
+            if action.validate(state) == False:  # Validate the action requested is valid, otherwise
+                raise utils.InvalidMove("%s is not permitted" % action)  # raise an error to the user to respond to.
+            return [action]

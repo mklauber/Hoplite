@@ -126,10 +126,12 @@ class Attack(Action):
     damage = 1
     
     def execute(self, state):
-        state[self.target]['health'] -= self.damage
+        if self.target in state:
+            state[self.target]['health'] -= self.damage
 
     def rollback(self, state):
-        state[self.target]['health'] += self.damage
+        if self.target in state:
+            state[self.target]['health'] += self.damage
 
 class Stab(Attack):
     def validate(self, state):
@@ -180,7 +182,8 @@ class Shoot(Attack):
 class WizardsBeam(Attack):
     pass
 
-class Explode(Attack):
+
+class Explode(Action):
     def execute(self, state):
         state.actors.remove(self.element)
         del state[self.target]
@@ -191,6 +194,9 @@ class Explode(Attack):
 
     def validate(self, state):
         return True
+
+class BlastWave(Attack):
+    pass
 
 
 class Die(Action):
