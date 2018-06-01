@@ -4,6 +4,8 @@ from shared import CreateAction
 import copy
 import json
 import utils
+import grid
+import random
 
 
 import logging
@@ -158,3 +160,43 @@ def load_level(filename):
             computed.append(CreateAction(action)) # Turn every action into an action object, not just a dict
         result.append(computed)
     return result
+
+
+def generate_level(number):
+    with open(utils.data_file('levels.json'), 'r') as f:
+        data = json.load(f)
+        level = data[str(number)]
+
+
+    results = []
+    remaining_cells = copy.copy(grid.VALID_CELLS)
+
+    # Add a hero
+    results.append(CreateAction({
+            "type":"Spawn",
+            "target": [10,0],
+            "element": {
+               "type": "Hero",
+               "team": "red"
+            }
+        }))
+    remaining_cells.remove((10,0))
+
+    # Add the enemies
+    for kind, count in level.items():
+        for i in range(0, count):
+            location = random.choice(remaining_cells)
+            results.append(CreateAction({
+                "type":"Spawn",
+                "target": location,
+                "element": {
+                    "type": kind,
+                    "team": "blue"
+                }
+            }))
+            remaining_cells.remove(location)
+    logger.info(results)
+
+
+
+    return [results]

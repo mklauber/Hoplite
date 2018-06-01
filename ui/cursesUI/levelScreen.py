@@ -31,7 +31,8 @@ def process(command, key):
 class LevelScreen(object):
     def __init__(self, level):
         self.events = []
-        self.engine = engine.Engine(engine.load_level(level))
+        self.level = level
+        self.engine = engine.Engine(engine.generate_level(level))
 
     def listener(self, state, action):
         """Listen for events the engine announces.  Attached to the engine in __call__"""
@@ -141,7 +142,7 @@ class LevelScreen(object):
 
         if self.engine.state.actors[0]['team'] == 'red':
             self.message(screen, "Congrats, you've beaten the level")
-            return LevelScreen('level1.json')
+            return LevelScreen(self.level + 1)
         else:
             self.message(screen, "I'm sorry, you've died.")
             from ui.cursesUI.titleScreen import TitleScreen

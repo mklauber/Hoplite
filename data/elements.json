@@ -13,7 +13,8 @@
   },
   "Demolitionist": {
      "abilities": ["ThrowBomb", "Move", "Health", "Bashable"],
-    "health": 1
+    "health": 1,
+    "bomb cooldown": 0
   },
   "Bomb": {
     "abilities": ["Explode", "Bashable"]
@@ -25,7 +26,7 @@
     "abilities": []
   },
   "Hero": {
-    "abilities": ["Slash", "Lunge", "Move", "Health", "Bashable", "Bash"],
+    "abilities": ["Slash", "Lunge", "Move", "Health", "Bashable", "Bash", "Jump"],
     "health": 3
   },
   "Exit": {

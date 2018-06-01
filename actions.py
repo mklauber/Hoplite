@@ -31,6 +31,16 @@ class Action(dict):
     def validate(self, state):
         raise NotImplementedError("Validate '%s' is not implemented", self.__class__.__name__)
 
+class Null(Action):
+    def execute(self, state):
+        pass
+
+    def rollback(self, state):
+        pass
+
+    def validate(self, state):
+        pass
+
 class Spawn(Action):
     """Add a new element to the game grid"""
 
@@ -52,7 +62,23 @@ class Spawn(Action):
         return True
 
 class ThrowBomb(Action):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(ThrowBomb, self).__init__(self, *args, **kwargs)
+        self.bomb = CreateUnit(type='Bomb', team=self.element['team'])
+
+    def execute(self, state):
+        state.actors.append(self.bomb)
+        state[self.target] = self.bomb
+
+    def rollback(self, state):
+        state.actors.remove(self.bomb)
+        del state[self.bomb]
+
+    def validate(self, state):
+        if self.target in state:
+            return False
+        return True
+
     
 class Move(Action):
     def execute(self, state):
@@ -67,6 +93,23 @@ class Move(Action):
             logger.debug("%s does not have the ability to Move")
             return False
         if self.target not in grid.neighbors(state.find(self.element)):
+            return False
+        if self.target not in grid.VALID_CELLS:
+            return False
+        if self.target in state:
+            logger.debug("%s tried to move to %s, which is occupied by %s",
+                         self.element, self.target, state[self.target])
+            return False
+        return True
+
+class Jump(Move):
+    def validate(self, state):
+        if "Move" not in self.element["abilities"]:
+            logger.debug("%s does not have the ability to Move")
+            return False
+        if grid.distance(self.target, state.find(self.element)) != 2:
+            return False
+        if self.target not in grid.VALID_CELLS:
             return False
         if self.target in state:
             logger.debug("%s tried to move to %s, which is occupied by %s",

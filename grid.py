@@ -2,6 +2,8 @@ from __future__ import division
 from Queue import PriorityQueue
 from utils import HopliteError
 
+import random
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -99,7 +101,7 @@ def find_path(grid, start, goals):
         if current in goals:
             return path
 
-        for next in neighbors(current):
+        for next in sorted(neighbors(current), key=lambda k: random.random()):
             new_cost = cost + float("inf") if next in grid else 1
             if new_cost < cost_so_far.get(next, float("inf")):
                 cost_so_far[next] = new_cost

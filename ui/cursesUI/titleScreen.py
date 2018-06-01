@@ -28,7 +28,7 @@ class TitleScreen(object):
         if chr(key).upper() == 'Q':
             return lambda x: None
         elif chr(key).upper() == 'S':
-            return LevelScreen('level1.json')
+            return LevelScreen(2)
 
     def __call__(self, stdscr):
         win = curses.newwin(28,58)

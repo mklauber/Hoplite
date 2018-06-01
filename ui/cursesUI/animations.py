@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 import curses
 from math import copysign, floor
+from copy import copy
 
 from ui.cursesUI import COLORS, UNITS
 from ui.cursesUI.offset import get_offset
@@ -8,6 +9,8 @@ import utils
 
 import logging
 logger = logging.getLogger(__name__)
+
+ANIMATION_DURATION = 750
 
 def get_background():
     background = curses.newwin(28, 58)
@@ -30,10 +33,13 @@ def render_unit(position, unit, win):
     elif unit['type'] == 'Archer':
         win.addstr(row, col, *UNITS['Archer'])
     elif unit['type'] == 'Demolitionist':
-        win.addstr(row, col, *UNITS['Demolitionist'])
+        data = copy(UNITS['Demolitionist'])
+        data[0] = 'D*' if unit['bomb cooldown'] <= 0 else 'D'
+        win.addstr(row, col, *data)
+    elif unit['type'] == 'Bomb':
+        win.addstr(row, col, *UNITS['Bomb'])
     elif unit['type'] == 'Mage':
         win.addstr(row, col, *UNITS['Mage'])
-
 
 
 def render(state):
@@ -61,9 +67,8 @@ def text_path(src, dest):
             slope = float(row_diff) / float(col_diff) if col_diff != 0 else 0
             yield sRow + int(floor(i * slope)), sCol + i
 
-class Animation(object):
-    __metaclass__ = ABCMeta
 
+class Animation(object):
     def __init__(self, action):
         self.action = action
         self.target = action['target']
@@ -79,9 +84,19 @@ class Animation(object):
         logger.info("Defaulting to StaticAnimation for %s", action)
         return Static(action)
 
-    @abstractmethod
-    def render(self):
-        pass
+
+    def render(self, stdscr, state):
+        background = get_background()
+        elements = render(state)
+
+        timeout = min(75, ANIMATION_DURATION / len(list(self.frames(state))))
+
+        stdscr.timeout(timeout)
+        for frame in self.frames(state):
+            background.overwrite(stdscr)
+            elements.overlay(stdscr)
+            frame(stdscr)
+            stdscr.getch()
 
 
 class Static(Animation):
@@ -105,21 +120,30 @@ class Move(Animation):
         # Path to new square
         for row, col in text_path(source, self.target):
             def path_to_stab(screen):
-                screen.addstr(sRow, sCol, "_", curses.A_DIM)
+                screen.addstr(sRow, sCol, "__", curses.A_DIM)
                 screen.addstr(row, col, *UNITS[type])
 
             yield path_to_stab
 
-    def render(self, stdscr, state):
-        background = get_background()
-        elements = render(state)
 
-        stdscr.timeout(150)
-        for frame in self.frames(state):
-            background.overwrite(stdscr)
-            elements.overlay(stdscr)
-            frame(stdscr)
-            stdscr.getch()
+class Jump(Move):
+    pass
+
+
+class ThrowBomb(Animation):
+    def frames(self, state):
+        source = state.find(self.element)
+
+        sRow, sCol = get_offset(source)
+        type = self.action["element"]["type"]
+
+        # Path to new square
+        for row, col in text_path(source, self.target):
+            def path_to_stab(screen):
+                screen.addstr(sRow, sCol+1, "_", curses.A_DIM)
+                screen.addstr(row, col, *UNITS['Bomb'])
+
+            yield path_to_stab
 
 
 class Die(Animation):
@@ -153,23 +177,14 @@ class Stab(Animation):
                 screen.addstr(row, col, *UNITS[type])
             yield path_from_stab
 
-    def render(self, stdscr, state):
-        background = get_background()
-        elements = render(state)
-
-        stdscr.timeout(150)
-        for frame in self.frames(state):
-            background.overwrite(stdscr)
-            elements.overlay(stdscr)
-            frame(stdscr)
-            stdscr.getch()
-
 
 class Slash(Stab):
     pass
 
+
 class Lunge(Stab):
     pass
+
 
 class Shoot(Animation):
     def frames(self, state):
@@ -178,14 +193,3 @@ class Shoot(Animation):
             def frame(screen):
                 screen.addstr(row, col, '|', COLORS['BLUE'] | curses.A_BOLD)
             yield frame
-
-    def render(self, stdscr, state):
-        background = get_background()
-        elements = render(state)
-
-        stdscr.timeout(150)
-        for frame in self.frames(state):
-            background.overwrite(stdscr)
-            elements.overlay(stdscr)
-            frame(stdscr)
-            stdscr.getch()

@@ -1,5 +1,6 @@
 import grid
 from shared import CreateAction
+from copy import copy
 
 import logging
 logger = logging.getLogger(__name__)
@@ -33,12 +34,18 @@ class Move(object):
     def get_action(cls, actor, state):
         try:
             path = grid.find_path(state, state.find(actor), actor.targets(state))
+            if len(path) == 1:
+                return CreateAction({"type": "Null",
+                                     "element": actor,
+                                     "target": state.find(actor)})
+
             return CreateAction({"type": "Move",
                                  "element": actor,
                                  "target": path[1]})
 
         except grid.NoPathExistsError:
             return None
+
 
 
 class Slash(object):
@@ -75,7 +82,19 @@ class Shoot(object):
         for target, element in state.items():
             if element['team'] != actor['team']:
                 # TODO: This does not handle issues with someone between the archer and the target.
-                results |= grid.lines(target, 5) - grid.lines(target, 1)
+                directions = copy(grid.DIRECTIONS)
+                blocked = []
+                for i in range(1,5):
+                    for d in directions:
+                        cell = grid.add(target, grid.mult(d,i))
+                        if d in blocked:
+                            continue
+                        elif cell in state.keys() and cell != state.find(actor):
+                            blocked.append(d)
+                        else:
+                            results.add(cell)
+
+                results -= grid.lines(target, 1)
         return results
 
 
@@ -90,7 +109,33 @@ class WizardsBeam(object):
 
 
 class ThrowBomb(object):
-    pass
+    @classmethod
+    def get_action(cls, actor, state):
+        actor['bomb cooldown'] -= 1
+        if actor['bomb cooldown'] <= 0:
+            for cell in grid.burst(state.find(actor), 3):
+                neighbors = [state[c] for c in grid.neighbors(cell) if c in state]
+                teams = set(n['team'] for n in neighbors if 'team' in n)
+                if actor['team'] in teams:  # Can't hit allies.
+                    continue
+                elif len(teams) == 0:   # Don't target cells where you won't hit anyone.
+                    continue
+                else:
+                    return CreateAction({
+                        'type': "ThrowBomb",
+                        'element': actor,
+                        'target': cell
+                    })
+
+    @classmethod
+    def targets(cls, actor, state):
+        targets = set()
+        avoid = set()
+        for cell, element in state.items():
+            if actor['team'] != element['team']:
+                targets |= grid.burst(cell, 3) - grid.burst(cell, 2)
+                avoid |= grid.burst(cell, 1)
+        return targets - avoid
 
 
 class Explode(object):

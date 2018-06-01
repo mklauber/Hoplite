@@ -39,9 +39,10 @@ def start():
 
         UNITS.update({
             'Hero': ['H', COLORS['GREEN'] | curses.A_BOLD | curses.A_UNDERLINE],
-            'Warrior': ['W', COLORS['RED'] | curses.A_BOLD | curses.A_UNDERLINE],
+            'Warrior': ['W', COLORS['CYAN'] | curses.A_BOLD | curses.A_UNDERLINE],
             'Archer': ['A', COLORS['BLUE'] | curses.A_BOLD | curses.A_UNDERLINE],
-            'Demolitionist': ['D', COLORS['CYAN'] | curses.A_BOLD | curses.A_UNDERLINE],
+            'Demolitionist': ['D', COLORS['RED'] | curses.A_BOLD | curses.A_UNDERLINE],
+            'Bomb': ['*', COLORS['RED'] | curses.A_BOLD | curses.A_UNDERLINE],
             'Mage': ['M', COLORS['MAGENTA'] | curses.A_BOLD | curses.A_UNDERLINE]
         })
 
