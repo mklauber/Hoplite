@@ -9,7 +9,8 @@
   },
   "Mage": {
     "abilities": ["WizardsBeam", "Move", "Health", "Bashable"],
-    "health": 1
+    "health": 1,
+    "beam cooldown": 0
   },
   "Demolitionist": {
      "abilities": ["ThrowBomb", "Move", "Health", "Bashable"],

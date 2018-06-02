@@ -55,7 +55,7 @@ class LevelScreen(object):
         """Display an error message to the user."""
         win = curses.newwin(21, 52)                 # Create a new window to display the error message.
         win.border()                                # Add a border for appearances
-        lines = textwrap.wrap(message, 50)    # Our error message may not fit in one line.  wrap it.
+        lines = textwrap.wrap(message, 50)              # Our error message may not fit in one line.  wrap it.
 
         for i, line in enumerate(lines, start=1):   # Add the lines of our error message to our window.
             win.addstr(i, 1, line)
@@ -98,8 +98,8 @@ class LevelScreen(object):
             return shared.CreateAction({"type": name,
                                          "element": self.engine.state.actors[0],
                                          "target":location})
-        except shared.InvalidAction as e:
-            logger.warn("Unable to parse: %s" % e.message)
+        except:
+            logger.warn("Unable to parse: %s" % command)
             self.message(screen, "Unable to parse that command.")
             return None
 
@@ -144,6 +144,7 @@ class LevelScreen(object):
 
         if self.engine.state.actors[0]['team'] == 'red':
             if self.level > MAX_LEVELS:
+                from ui.cursesUI.titleScreen import TitleScreen
                 return TitleScreen()
             self.message(screen, "Congrats, you've beaten the level")
             return LevelScreen(self.level + 1)
@@ -151,6 +152,7 @@ class LevelScreen(object):
             self.message(screen, "I'm sorry, you've died.")
             from ui.cursesUI.titleScreen import TitleScreen
             return TitleScreen()
+
 
         logger.debug("Game Complete")
 

@@ -36,12 +36,15 @@ def render_unit(position, unit, win):
         win.addstr(row, col, *UNITS['Archer'])
     elif unit['type'] == 'Demolitionist':
         data = copy(UNITS['Demolitionist'])
-        data[0] = 'D*' if unit['bomb cooldown'] <= 1 else 'D'
+        data[0] = 'D*' if unit['bomb cooldown'] <= 0 else 'D'
         win.addstr(row, col, *data)
     elif unit['type'] == 'Bomb':
         win.addstr(row, col, *UNITS['Bomb'])
     elif unit['type'] == 'Mage':
-        win.addstr(row, col, *UNITS['Mage'])
+        data = copy(UNITS['Mage'])
+        data[0] = 'M*' if unit['beam cooldown'] <= 0 else 'M'
+        win.addstr(row, col, *data)
+
 
 
 def render(state):
@@ -166,16 +169,16 @@ class Stab(Animation):
         # Path to Stab
         for row, col in text_path(source, self.target):
             def path_to_stab(screen):
-                screen.addstr(sRow, sCol, "_", curses.A_DIM)
+                screen.addstr(sRow, sCol, "__", curses.A_DIM)
                 screen.addstr(row, col, *UNITS[type])
             yield path_to_stab
 
         # Path from Stab
         for row, col in text_path(self.target, source):
             def path_from_stab(screen):
-                screen.addstr(sRow, sCol, "_", curses.A_DIM)
+                screen.addstr(sRow, sCol, "__", curses.A_DIM)
                 if state[self.target]['health'] - self.action.damage <= 0:
-                    screen.addstr(tRow, tCol, "_", curses.A_DIM)
+                    screen.addstr(tRow, tCol, "__", curses.A_DIM)
                 screen.addstr(row, col, *UNITS[type])
             yield path_from_stab
 

@@ -64,13 +64,12 @@ class Spawn(Action):
 class ThrowBomb(Action):
     def __init__(self, *args, **kwargs):
         super(ThrowBomb, self).__init__(self, *args, **kwargs)
-        self.bomb = CreateUnit(type='Bomb', team=self.element['team'])
-
+        self.bomb = CreateUnit(type='Bomb')
     def execute(self, state):
         self.cooldown = self.element['bomb cooldown']
-        self.element['bomb cooldown'] = 3
-        last_hero = max(loc for loc, val in enumerate(state.actors) if val['type'] == 'Hero')
-        state.actors.insert(last_hero + 1, self.bomb)
+        self.element['bomb cooldown'] = 2
+        #last_hero = max(loc for loc, val in enumerate(state.actors) if val['type'] == 'Hero')
+        state.actors.append(self.bomb)
         state[self.target] = self.bomb
 
     def rollback(self, state):
@@ -126,11 +125,11 @@ class Attack(Action):
     damage = 1
     
     def execute(self, state):
-        if self.target in state:
+        if self.target in state and 'health' in state[self.target]:
             state[self.target]['health'] -= self.damage
 
     def rollback(self, state):
-        if self.target in state:
+        if self.target in state and 'health' in state[self.target]:
             state[self.target]['health'] += self.damage
 
 class Stab(Attack):
@@ -180,8 +179,13 @@ class Shoot(Attack):
         return False
 
 class WizardsBeam(Attack):
-    pass
+    def execute(self, state):
+        super(WizardsBeam, self).execute(state)
+        self.element['beam cooldown'] = 1
 
+    def rollback(self, state):
+        super(WizardsBeam, self).rollback(state)
+        self.element['beam cooldown'] = -1
 
 class Explode(Action):
     def execute(self, state):

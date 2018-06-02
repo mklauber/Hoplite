@@ -51,7 +51,7 @@ class Engine(object):
     def complete(self):
         """Make knowing if the game is over simple
            The game is over when one team remains."""
-        remaining_teams = set(u['team'] for u in self.state.values())
+        remaining_teams = set(element['team'] for element in self.state.values() if 'team' in element)
         return len(remaining_teams) == 1
 
     def fast_forward(self):
@@ -172,7 +172,7 @@ def generate_level(number):
                "team": "red"
             }
         }))
-    remaining_cells.remove((10,0))
+    remaining_cells.remove((10, 0))
 
     # Add the enemies
     for kind, count in level.items():
@@ -188,7 +188,5 @@ def generate_level(number):
             }))
             remaining_cells.remove(location)
     logger.info(results)
-
-
 
     return [results]
