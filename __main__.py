@@ -11,7 +11,6 @@ parser.add_argument('--ui', help="Choose the output UI", type=str,
 parser.add_argument('--test', type=str, choices=['engine'])
 
 
-
 if __name__ == '__main__':
     logging.basicConfig(filename="Hoplite.log",
                         format="%(module)s:%(lineno)d %(levelname)s %(message)s",

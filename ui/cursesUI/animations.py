@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 ANIMATION_DURATION = 750
 
+
 def get_background():
     background = curses.newwin(28, 58)
     background.border()
@@ -44,7 +45,6 @@ def render_unit(position, unit, win):
         data = copy(UNITS['Mage'])
         data[0] = 'M*' if unit['beam cooldown'] <= 0 else 'M'
         win.addstr(row, col, *data)
-
 
 
 def render(state):
@@ -79,7 +79,6 @@ class Animation(object):
         self.target = action['target']
         self.element = action['element']
 
-
     @classmethod
     def create(cls, action):
         for klass in utils.all_subclasses(cls):
@@ -88,7 +87,6 @@ class Animation(object):
                 return klass(action)
         logger.info("Defaulting to StaticAnimation for %s", action)
         return Static(action)
-
 
     def render(self, stdscr, state):
         background = get_background()
@@ -208,13 +206,9 @@ class Explode(Animation):
         for frame in animation:
             def draw_flame(screen):
                 sRow, sCol = get_offset(self.target)
-                screen.addstr(sRow, sCol +1 - len(frame)/2, frame, COLORS['FIRE'])
+                screen.addstr(sRow, sCol + 1 - len(frame)/2, frame, COLORS['FIRE'])
             yield draw_flame
+
 
 class BlastWave(Explode):
     pass
-
-
-
-
-

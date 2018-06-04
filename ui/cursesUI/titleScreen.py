@@ -5,25 +5,30 @@ from .colors import COLORS
 from itertools import cycle
 import utils
 
+
 class TitleScreen(object):
 
     THANKS = "            With special thanks to:" \
-    "    MagmaFortress, for creating the game" \
-    "    Bob Nystrom, for publishing \"Game Programming Patterns\"" \
-    "    Juniper, for being a loving wife and tolerating my technobabble."
+        "    MagmaFortress, for creating the game" \
+        "    Bob Nystrom, for publishing \"Game Programming Patterns\"" \
+        "    Juniper, for being a loving wife and tolerating my technobabble."
 
     def get_color(self, i):
-        if 0 < i < 6:     return COLORS['GREEN'] | curses.A_BOLD
-        elif 6 < i < 8:   return COLORS['BLUE']  | curses.A_BOLD
-        elif i == 11:     return COLORS['CYAN']  | curses.A_BOLD
-        elif 8 < i < 15:  return curses.A_DIM
-        elif 15 < i < 17: return COLORS['RED']   | curses.A_BOLD
+        if 0 < i < 6:
+            return COLORS['GREEN'] | curses.A_BOLD
+        elif 6 < i < 8:
+            return COLORS['BLUE'] | curses.A_BOLD
+        elif i == 11:
+            return COLORS['CYAN'] | curses.A_BOLD
+        elif 8 < i < 15:
+            return curses.A_DIM
+        elif 15 < i < 17:
+            return COLORS['RED'] | curses.A_BOLD
         else:
             return 0
 
-
     def handle(self, key):
-        if  not curses.ascii.isprint(key):
+        if not curses.ascii.isprint(key):
             return None
 
         if chr(key).upper() == 'Q':
@@ -32,7 +37,7 @@ class TitleScreen(object):
             return LevelScreen(1)
 
     def __call__(self, stdscr):
-        win = curses.newwin(28,58)
+        win = curses.newwin(28, 58)
         win.border()
         stdscr.timeout(100)
 
@@ -47,7 +52,7 @@ class TitleScreen(object):
         for i in thanks_iterator:
             win.overwrite(stdscr)
             thanks = self.THANKS[i:] + self.THANKS[:i]
-            stdscr.addstr(24, 1,thanks[:56])
+            stdscr.addstr(24, 1, thanks[:56])
 
             result = self.handle(stdscr.getch())
             if result:

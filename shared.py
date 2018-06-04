@@ -1,8 +1,10 @@
 import utils
 import json
 
+
 class InvalidAction(utils.HopliteError):
     pass
+
 
 def CreateAction(action):
     """Function used to create a Action object from a json dictionary"""

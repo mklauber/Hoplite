@@ -12,14 +12,14 @@ def slash(action, state):
     # Check to make sure the actor is Moving and that they can slash
     if not isinstance(action, actions.Move) or "Slash" not in action['element']['abilities']:
         return []
-    
-    actor   = action['element']
-    src     = state.find(actor)
-    dest    = action['target']
+
+    actor = action['element']
+    src = state.find(actor)
+    dest = action['target']
     # Can only target cells that were next to the actor at the start and end of his movement.
     # By doing it this way, we can handle leaping with the same test.
     targets = grid.neighbors(src) & grid.neighbors(dest)
-    
+
     results = []
     for target in targets:
         # for every cell in targets, check if an enemy is present
@@ -32,7 +32,7 @@ def slash(action, state):
             })
             logger.debug("%s triggered %s", action, reaction)
             results.append(reaction)
-            
+
     return results
 
 
@@ -43,9 +43,9 @@ def lunge(action, state):
     if not isinstance(action, actions.Move) or "Lunge" not in action['element']['abilities']:
         return []
 
-    actor   = action['element']
-    src     = state.find(actor)
-    dest    = action['target']
+    actor = action['element']
+    src = state.find(actor)
+    dest = action['target']
 
     # confirm this is a move in a direction we can lunge.
     vector = grid.unit_vector(src, dest)
@@ -54,7 +54,7 @@ def lunge(action, state):
 
     # Determine the target
     target = grid.add(dest, vector)
-    if target in state and actor['team'] != state[target]['team']  and "Health" in state[target]['abilities']:
+    if target in state and actor['team'] != state[target]['team'] and "Health" in state[target]['abilities']:
         # If so, add a Slash Action as a reaction.
         reaction = CreateAction({
             "type": "Lunge",

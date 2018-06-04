@@ -25,7 +25,6 @@ class Unit(dict):
     # Create a counter for each type of game element.  Used to assign IDs.
     counters = defaultdict(lambda: utils.Counter())
 
-
     def __init__(self, **kwargs):
         super(Unit, self).__init__(**kwargs)
         type = kwargs['type']               # Grab type from kwargs, for cleanliness
@@ -54,7 +53,7 @@ class Unit(dict):
            ability and seeing if it suggests and action at this time."""
         for ability in self.abilities:
             action = ability.get_action(self, state)
-            if action: 
+            if action:
                 return action
         return None
 
@@ -78,6 +77,7 @@ class Unit(dict):
 
 class Hero(Unit):
     """A special case of a Unit, this unit requires user input to determine it's actions."""
+
     def __init__(self, **kwargs):
         super(Hero, self).__init__(**kwargs)
         self.next_action = None     # self.next_action is the sentinel to determine if the actor has it's next action.

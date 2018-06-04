@@ -22,6 +22,7 @@ MAX_LEVELS = 9
 class QuitError(utils.HopliteError):
     pass
 
+
 def process(command, key):
     if key == curses.KEY_BACKSPACE:
         return command[:-1]
@@ -29,6 +30,7 @@ def process(command, key):
         return command + chr(key)
     else:
         return command
+
 
 class LevelScreen(object):
     def __init__(self, level):
@@ -73,7 +75,8 @@ class LevelScreen(object):
     def draw_health(self, screen):
         """Draw the health of the current Hero.
            Should only be called on units that are waiting for player input"""
-        screen.addstr(3,2, "Health: "+ u"♥".encode("utf-8") * self.engine.state.actors[0]['health'], COLORS['RED']| curses.A_BOLD)
+        screen.addstr(3, 2, "Health: " + u"♥".encode("utf-8") *
+                      self.engine.state.actors[0]['health'], COLORS['RED'] | curses.A_BOLD)
 
     def get_input(self, screen):
         """Allow the user to enter a command for the current Actor."""
@@ -96,8 +99,8 @@ class LevelScreen(object):
             name, location = command.split(" ", 1)
             location = ast.literal_eval(location.strip())
             return shared.CreateAction({"type": name,
-                                         "element": self.engine.state.actors[0],
-                                         "target":location})
+                                        "element": self.engine.state.actors[0],
+                                        "target": location})
         except:
             logger.warn("Unable to parse: %s" % command)
             self.message(screen, "Unable to parse that command.")
@@ -153,7 +156,4 @@ class LevelScreen(object):
             from ui.cursesUI.titleScreen import TitleScreen
             return TitleScreen()
 
-
         logger.debug("Game Complete")
-
-

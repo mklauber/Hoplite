@@ -12,8 +12,8 @@ class Stab(object):
         for target in cls.threatened_cells(actor, state):
             if target in state and 'health' in state[target] and state[target]['team'] != actor['team']:
                 return [CreateAction({"type": "Stab",
-                                     "element": actor, 
-                                     "target": target})]
+                                      "element": actor,
+                                      "target": target})]
 
     @classmethod
     def targets(cls, actor, state):
@@ -39,8 +39,8 @@ class Move(object):
                                       "element": actor,
                                       "target": path[1]})]
             return [CreateAction({"type": "Null",
-                                 "element": actor,
-                                 "target": state.find(actor)})]
+                                  "element": actor,
+                                  "target": state.find(actor)})]
 
         except grid.NoPathExistsError:
             return None
@@ -61,18 +61,17 @@ class Shoot(object):
 
         blocked = [d for d in grid.DIRECTIONS if grid.add(src, d) in state]
 
-        for i in range(2,5):
+        for i in range(2, 5):
             for direction in grid.DIRECTIONS:
                 if direction in blocked:    # Don't check cells that have something in the way.
                     continue
                 target = grid.add(src, grid.mult(direction, i))
                 if target in state and 'health' in state[target] and state[target]['team'] != actor['team']:
                     return [CreateAction({"type": "Shoot",
-                                         "element": actor,
-                                         "target": target})]
+                                          "element": actor,
+                                          "target": target})]
                 elif target in state:
                     blocked.append(direction)
-
 
     @classmethod
     def targets(cls, actor, state):
@@ -83,9 +82,9 @@ class Shoot(object):
 
             directions = copy(grid.DIRECTIONS)
             blocked = []
-            for i in range(1,5):
+            for i in range(1, 5):
                 for d in directions:
-                    cell = grid.add(target, grid.mult(d,i))
+                    cell = grid.add(target, grid.mult(d, i))
                     if d in blocked:
                         continue
                     elif cell in state.keys() and cell != state.find(actor):
@@ -95,7 +94,6 @@ class Shoot(object):
 
             results -= grid.lines(target, 1)
         return results
-
 
     @classmethod
     def threatened_cells(cls, actor, state):
@@ -108,7 +106,7 @@ class WizardsBeam(object):
     def get_action(cls, actor, state):
         src = state.find(actor)
         actor['beam cooldown'] -= 1
-        if actor['beam cooldown'] >= 0: # Only fire every other turn
+        if actor['beam cooldown'] >= 0:  # Only fire every other turn
             return
 
         for direction in grid.DIRECTIONS:
@@ -126,8 +124,8 @@ class WizardsBeam(object):
                 continue
             else:
                 return [CreateAction({"type": "WizardsBeam",
-                                     "element": actor,
-                                     "target": t}) for t in cells]
+                                      "element": actor,
+                                      "target": t}) for t in cells]
 
     @classmethod
     def targets(cls, actor, state):
@@ -204,7 +202,7 @@ class Prayer(object):
 
 class Spear(object):
     pass
-    
+
 
 class DeepLunge(object):
     pass

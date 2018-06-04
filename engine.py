@@ -67,7 +67,7 @@ class Engine(object):
     def step_backward(self):
         """Reverse one turn from the past against the current state"""
 
-        if len(self.past) == 0: # There are no previous turns, so don't do anything.
+        if len(self.past) == 0:  # There are no previous turns, so don't do anything.
             return
 
         turn = self.past.pop()                  # Get the previous turn
@@ -76,14 +76,14 @@ class Engine(object):
             self.state.actors.insert(0, actor)  #
 
         for action in reversed(turn):   # For every action (and reaction) in the turn
-            action.rollback(self.state) # Undo them in reverse order
+            action.rollback(self.state)  # Undo them in reverse order
 
-        self.future.insert(0, turn) # Add this turn to the future in case we want to redo it.
+        self.future.insert(0, turn)  # Add this turn to the future in case we want to redo it.
 
     def step_forward(self):
         """Playback one turn from the future against the current state"""
 
-        if len(self.future) == 0: # There are no future turns, so don't do anything.
+        if len(self.future) == 0:  # There are no future turns, so don't do anything.
             return
 
         turn = self.future.pop(0)               # Get the next turn
@@ -95,32 +95,33 @@ class Engine(object):
             self.emit(self.state, action)   # Announce them, and the current state.
             action.execute(self.state)      # execute the action against the current state
 
-        self.past.append(turn) # Add this turn to the past in case we want to undo it.
+        self.past.append(turn)  # Add this turn to the past in case we want to undo it.
 
     def emit(self, state, action):
         """Announce to any interested listeners each action and the state before the action"""
         state = copy.deepcopy(state)    # Copy the state so that progressing the game doesn't screw up event listeners
-        for listener in self.listeners: # who delay parsing the (state, action) messages.
+        for listener in self.listeners:  # who delay parsing the (state, action) messages.
             listener(state, action)
 
     def record(self, overwrite=False):
         """Record new actions for the game"""
 
-        if overwrite == False and self.future != []: # Sometimes we may not want to be able to record new actions.
+        if overwrite == False and self.future != []:  # Sometimes we may not want to be able to record new actions.
             raise utils.HopliteError("Cannot record a turn when future turns exist unless the overwrite flag is True")
 
         actor = self.state.actors[0]            # Get the current actor, and ask them for their action, given the state
-        actions = actor.get_action(self.state)   # Heroes may raise a NeedsInput Exception here for the UI to respond to.
+        # Heroes may raise a NeedsInput Exception here for the UI to respond to.
+        actions = actor.get_action(self.state)
 
         # Copy the state, because determining reactions requires us to modify the current state (in case a reaction
         # causes a future reaction).  So we copy the state, and then apply them to our main state later.
         state = copy.deepcopy(self.state)
 
         turn = []
-        while len(actions) != 0: # While we have an action left in the turn
+        while len(actions) != 0:  # While we have an action left in the turn
             action = actions.pop(0)
             logger.debug(action)
-            reactions = determine_reactions(action, state) # Determine the reaction that action triggers
+            reactions = determine_reactions(action, state)  # Determine the reaction that action triggers
             actions = reactions + actions   # Insert them immediately after the action that triggers them.
             action.execute(state)      # Modify the current state by executing the action
             turn.append(action)             # Add it to the turn.
@@ -149,7 +150,7 @@ def load_level(filename):
     for turn in level:
         computed = []
         for action in turn:
-            computed.append(CreateAction(action)) # Turn every action into an action object, not just a dict
+            computed.append(CreateAction(action))  # Turn every action into an action object, not just a dict
         result.append(computed)
     return result
 
@@ -159,19 +160,18 @@ def generate_level(number):
         data = json.load(f)
         level = data[str(number)]
 
-
     results = []
     remaining_cells = copy.copy(grid.VALID_CELLS)
 
     # Add a hero
     results.append(CreateAction({
-            "type":"Spawn",
-            "target": [10,0],
-            "element": {
-               "type": "Hero",
-               "team": "red"
-            }
-        }))
+        "type": "Spawn",
+        "target": [10, 0],
+        "element": {
+                "type": "Hero",
+                "team": "red"
+        }
+    }))
     remaining_cells.remove((10, 0))
 
     # Add the enemies
@@ -179,7 +179,7 @@ def generate_level(number):
         for i in range(0, count):
             location = random.choice(remaining_cells)
             results.append(CreateAction({
-                "type":"Spawn",
+                "type": "Spawn",
                 "target": location,
                 "element": {
                     "type": kind,

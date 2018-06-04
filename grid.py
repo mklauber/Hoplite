@@ -33,7 +33,7 @@ def arc(origin, direction, depth):
     """A set of cells extending from three neighbors of the start cell."""
     results = set()
     index = DIRECTIONS.index(direction)
-    for i in range(1,depth+1):
+    for i in range(1, depth+1):
         for j in range(index - 1, index + 2):
             angle = DIRECTIONS[j % 6]
 
@@ -42,7 +42,6 @@ def arc(origin, direction, depth):
             if isValid(target):
                 results.add(target)
     return results
-
 
 
 def burst(cell, distance=1):
@@ -106,7 +105,7 @@ def find_path(grid, start, goals):
             if new_cost < cost_so_far.get(next, float("inf")):
                 cost_so_far[next] = new_cost
                 priority = new_cost + \
-                           min(map(lambda x: distance(next, x), goals))
+                    min(map(lambda x: distance(next, x), goals))
                 frontier.put((priority, path + [next]))
     raise NoPathExistsError()
 
@@ -115,8 +114,8 @@ def isValid(cell):
     """Determine if a cell is on the standard sized grid I'm using."""
     L, R = cell
     if abs(R) <= 4 and \
-                            0 <= R + L <= 11 and \
-                            0 <= L <= 11:
+            0 <= R + L <= 11 and \
+            0 <= L <= 11:
         return True
     return False
 
@@ -157,8 +156,10 @@ def unit_vector(src, dest):
     return (int((dL - sL) / denominator) if denominator != 0 else 0,
             int((dR - sR) / denominator) if denominator != 0 else 0)
 
+
 def add(start, vector):
     return (start[0] + vector[0], start[1] + vector[1])
+
 
 def mult(vector, scalar):
     return (vector[0] * scalar, vector[1] * scalar)

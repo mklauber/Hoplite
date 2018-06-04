@@ -31,6 +31,7 @@ class Action(dict):
     def validate(self, state):
         raise NotImplementedError("Validate '%s' is not implemented", self.__class__.__name__)
 
+
 class Null(Action):
     def execute(self, state):
         pass
@@ -40,6 +41,7 @@ class Null(Action):
 
     def validate(self, state):
         pass
+
 
 class Spawn(Action):
     """Add a new element to the game grid"""
@@ -51,7 +53,7 @@ class Spawn(Action):
     def execute(self, state):
         state.actors.append(self.element)
         state[self.target] = self.element
-    
+
     def rollback(self, state):
         state.actors.remove(self.element)
         del state[self.target]
@@ -61,10 +63,12 @@ class Spawn(Action):
             return False
         return True
 
+
 class ThrowBomb(Action):
     def __init__(self, *args, **kwargs):
         super(ThrowBomb, self).__init__(self, *args, **kwargs)
         self.bomb = CreateUnit(type='Bomb')
+
     def execute(self, state):
         self.cooldown = self.element['bomb cooldown']
         self.element['bomb cooldown'] = 2
@@ -83,6 +87,7 @@ class ThrowBomb(Action):
             return False
         return True
 
+
 class Move(Action):
     def execute(self, state):
         self.src = state.find(self.element)
@@ -90,7 +95,7 @@ class Move(Action):
 
     def rollback(self, state):
         state[self.src] = state.pop(self.target)
-        
+
     def validate(self, state):
         if "Move" not in self.element["abilities"]:
             logger.debug("%s does not have the ability to Move")
@@ -104,6 +109,7 @@ class Move(Action):
                          self.element, self.target, state[self.target])
             return False
         return True
+
 
 class Jump(Move):
     def validate(self, state):
@@ -120,9 +126,10 @@ class Jump(Move):
             return False
         return True
 
+
 class Attack(Action):
     damage = 1
-    
+
     def execute(self, state):
         if self.target in state and 'health' in state[self.target]:
             state[self.target]['health'] -= self.damage
@@ -130,6 +137,7 @@ class Attack(Action):
     def rollback(self, state):
         if self.target in state and 'health' in state[self.target]:
             state[self.target]['health'] += self.damage
+
 
 class Stab(Attack):
     def validate(self, state):
@@ -141,14 +149,18 @@ class Stab(Attack):
             return False
         return True
 
+
 class Slash(Attack):
     pass
+
 
 class Lunge(Attack):
     pass
 
+
 class DeepLunge(Attack):
     pass
+
 
 class Shoot(Attack):
     def validate(self, state):
@@ -177,6 +189,7 @@ class Shoot(Attack):
                 return True             # Foudn the target, and there's nothing in the way.  Shoot it!
         return False
 
+
 class WizardsBeam(Attack):
     def execute(self, state):
         super(WizardsBeam, self).execute(state)
@@ -185,6 +198,7 @@ class WizardsBeam(Attack):
     def rollback(self, state):
         super(WizardsBeam, self).rollback(state)
         self.element['beam cooldown'] = -1
+
 
 class Explode(Action):
     def execute(self, state):
@@ -198,8 +212,10 @@ class Explode(Action):
     def validate(self, state):
         return True
 
+
 class BlastWave(Attack):
     pass
+
 
 class Die(Action):
     def execute(self, state):
@@ -210,4 +226,3 @@ class Die(Action):
     def rollback(self, state):
         state.actors.insert(self.turn_position, self.element)
         state[self.target] = self.element
-

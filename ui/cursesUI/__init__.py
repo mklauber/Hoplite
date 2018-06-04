@@ -10,7 +10,6 @@ from .colors import COLORS, UNITS
 from ui.cursesUI.titleScreen import TitleScreen
 
 
-
 def start():
     logger.info("Starting a game of Hoplite, using Curses")
 
@@ -19,7 +18,7 @@ def start():
         locale.setlocale(locale.LC_ALL, '')
 
         logger.debug("Supported Attributes: %s", curses.termattrs())
-        logger.debug("Blink: %s", curses.termattrs() &  curses.A_BLINK)
+        logger.debug("Blink: %s", curses.termattrs() & curses.A_BLINK)
 
         # Setup colors for later
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -54,5 +53,3 @@ def start():
 
     # Start the curses application
     curses.wrapper(main)
-
-
