@@ -83,7 +83,6 @@ class ThrowBomb(Action):
             return False
         return True
 
-    
 class Move(Action):
     def execute(self, state):
         self.src = state.find(self.element)
@@ -201,7 +200,6 @@ class Explode(Action):
 
 class BlastWave(Attack):
     pass
-
 
 class Die(Action):
     def execute(self, state):

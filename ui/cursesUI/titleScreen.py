@@ -15,7 +15,8 @@ class TitleScreen(object):
     def get_color(self, i):
         if 0 < i < 6:     return COLORS['GREEN'] | curses.A_BOLD
         elif 6 < i < 8:   return COLORS['BLUE']  | curses.A_BOLD
-        elif 8 < i < 15:  return COLORS['CYAN']  | curses.A_BOLD
+        elif i == 11:     return COLORS['CYAN']  | curses.A_BOLD
+        elif 8 < i < 15:  return curses.A_DIM
         elif 15 < i < 17: return COLORS['RED']   | curses.A_BOLD
         else:
             return 0

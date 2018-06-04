@@ -29,7 +29,6 @@ def start():
         curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         curses.init_pair(6, curses.COLOR_YELLOW, curses.COLOR_RED)
 
-
         COLORS.update({
             'GREEN': curses.color_pair(1),
             'RED': curses.color_pair(2),
