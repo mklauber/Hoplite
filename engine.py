@@ -51,8 +51,16 @@ class Engine(object):
     def complete(self):
         """Make knowing if the game is over simple
            The game is over when one team remains."""
-        remaining_teams = set(element['team'] for element in self.state.values() if 'team' in element)
-        return len(remaining_teams) == 1
+        return len(self.remaining_teams) == 1
+
+    @property
+    def remaining_teams(self):
+        """Returns a list of teams remaining on the battlefield"""
+        return set(element['team'] for element in self.state.values() if 'team' in element)
+
+    @property
+    def current_actor(self):
+        return self.state.actors[0]
 
     def fast_forward(self):
         """Execute any remaining future items"""

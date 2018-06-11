@@ -126,7 +126,7 @@ class LevelScreen(object):
                     self.draw_health(screen)
                     self.highlight_char(screen)
                     action = self.get_input(screen)
-                    self.engine.state.actors[0].set_next_action(action)
+                    self.engine.current_actor.set_next_action(action)
                     continue
                 except utils.InvalidMove as e:
                     self.message(screen, e.message)
@@ -145,7 +145,7 @@ class LevelScreen(object):
                 f.write(json.dumps(self.engine.past, indent=2))
                 raise
 
-        if self.engine.state.actors[0]['team'] == 'red':
+        if self.engine.complete and 'red' in self.engine.remaining_teams:
             if self.level > MAX_LEVELS:
                 from ui.cursesUI.titleScreen import TitleScreen
                 return TitleScreen()
