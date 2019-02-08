@@ -29,22 +29,16 @@ def get_background():
 def render_unit(position, unit, win):
     row, col = get_offset(position)
 
-    if unit['type'] == 'Hero':
-        win.addstr(row, col, *UNITS['Hero'])
-    elif unit['type'] == 'Warrior':
-        win.addstr(row, col, *UNITS['Warrior'])
-    elif unit['type'] == 'Archer':
-        win.addstr(row, col, *UNITS['Archer'])
-    elif unit['type'] == 'Demolitionist':
+    if unit['type'] == 'Demolitionist':
         data = copy(UNITS['Demolitionist'])
         data[0] = 'D*' if unit['bomb cooldown'] <= 0 else 'D'
-        win.addstr(row, col, *data)
-    elif unit['type'] == 'Bomb':
-        win.addstr(row, col, *UNITS['Bomb'])
     elif unit['type'] == 'Mage':
         data = copy(UNITS['Mage'])
         data[0] = 'M*' if unit['beam cooldown'] <= 0 else 'M'
-        win.addstr(row, col, *data)
+    else:
+        data = UNITS[unit['type']]
+    win.addstr(row, col, *data)
+
 
 
 def render(state):
