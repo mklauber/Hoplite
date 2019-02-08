@@ -116,11 +116,11 @@ class Move(Animation):
 
         # Path to new square
         for row, col in text_path(source, self.target):
-            def path_to_stab(screen):
+            def path_to_move(screen):
                 screen.addstr(sRow, sCol, "__", curses.A_DIM)
                 screen.addstr(row, col, *UNITS[type])
 
-            yield path_to_stab
+            yield path_to_move
 
 
 class Jump(Move):
