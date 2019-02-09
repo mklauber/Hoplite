@@ -95,17 +95,15 @@ class Animation(object):
             frame(stdscr)
             stdscr.getch()
 
+    def frames(self, state):
+        def test(stdscr): pass
+        yield test
+
+
 
 class Static(Animation):
     def __init__(self, action=None):
         pass
-
-    def render(self, stdscr, state):
-        stdscr.timeout(100)
-        get_background().overwrite(stdscr)
-        render(state).overlay(stdscr)
-        stdscr.getch()
-
 
 class Move(Animation):
     def frames(self, state):
@@ -144,10 +142,8 @@ class ThrowBomb(Animation):
 
 
 class Die(Animation):
-
-    def render(self, screen, state):
-        pass
-
+    pass
+    
 
 class Stab(Animation):
 
