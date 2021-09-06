@@ -171,16 +171,30 @@ def generate_level(number):
     results = []
     remaining_cells = copy.copy(grid.VALID_CELLS)
 
-    # Add a hero
-    results.append(CreateAction({
-        "type": "Spawn",
-        "target": [10, 0],
-        "element": {
-                "type": "Hero",
-                "team": "red"
-        }
-    }))
-    remaining_cells.remove((10, 0))
+    # # Add a hero
+    # results.append(CreateAction({
+    #     "type": "Spawn",
+    #     "target": [10, 0],
+    #     "element": {
+    #             "type": "Hero",
+    #             "team": "red"
+    #     }
+    # }))
+    # remaining_cells.remove((10, 0))
+    # Add the enemies
+    for kind, count in level.items():
+        for i in range(0, count):
+            location = random.choice(remaining_cells)
+            results.append(CreateAction({
+                "type": "Spawn",
+                "target": location,
+                "element": {
+                    "type": kind,
+                    "team": "red"
+                }
+            }))
+            remaining_cells.remove(location)
+    logger.info(results)
 
     # Add the enemies
     for kind, count in level.items():

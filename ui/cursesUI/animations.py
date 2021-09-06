@@ -143,7 +143,7 @@ class ThrowBomb(Animation):
 
 class Die(Animation):
     pass
-    
+
 
 class Stab(Animation):
 
@@ -179,7 +179,7 @@ class Lunge(Stab):
     pass
 
 
-class Shoot(Animation):
+class Bow(Animation):
     def frames(self, state):
         source = state.find(self.element)
         for row, col in text_path(source, self.target):

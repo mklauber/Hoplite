@@ -54,7 +54,7 @@ class Lunge(object):
     pass
 
 
-class Shoot(object):
+class Bow(object):
     @classmethod
     def get_action(cls, actor, state):
         src = state.find(actor)

@@ -4,7 +4,7 @@
     "health": 1
   },
   "Archer": {
-    "abilities": ["Shoot", "Move", "Health", "Bashable"],
+    "abilities": ["Bow", "Move", "Health", "Bashable"],
     "health": 1
   },
   "Mage": {

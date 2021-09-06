@@ -49,7 +49,9 @@ def start():
         # Manage game state
         current_screen = TitleScreen()
         while current_screen != None:
+            print("")
             current_screen = current_screen(stdscr)
+
 
     # Start the curses application
     curses.wrapper(main)

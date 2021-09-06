@@ -37,7 +37,7 @@ class Unit(dict):
 
     def __repr__(self):
         """Represent the unit clearly in debug messages"""
-        return "<" + self['id'] + ">"
+        return "<" + self.get('team', "") + " " + self['id'] + ">"
 
     def __eq__(self, other):
         """Units are equal if their IDs are equal regardless of their other keys"""
