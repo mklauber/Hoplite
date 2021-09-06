@@ -130,8 +130,32 @@ class WizardsBeam(object):
     @classmethod
     def targets(cls, actor, state):
         results = set()
-        results.add(state.find(actor))
+        for target, element in state.items():
+            #Skip allies and non element units
+            if 'team' not in element or element['team'] == actor['team']:
+                continue
+
+            directions = copy(grid.DIRECTIONS)
+            for d in directions:
+                inverted = grid.mult(d, -1)
+                for i in range(5):
+                    allowed = True
+                    dest = grid.add(target, grid.mult(d, i))
+                    for cell in grid.line(dest, inverted, 5):
+                        if cell in state.keys() and state[cell]['team'] == actor['team']:
+                            allowed = False
+                    if allowed:
+                        results.add(dest)
         return results
+
+
+
+
+
+    @classmethod
+    def threatened_cells(cls, actor, state):
+        src = state.find(actor)
+        return grid.lines(src, 5)
 
 
 class ThrowBomb(object):
